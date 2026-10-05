@@ -10,6 +10,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -140,6 +143,17 @@ class MainActivity : Activity() {
 
 /** Puente mínimo entre la interfaz existente y los permisos/avisos del sistema Android. */
 private class HabitosBridge(private val activity: MainActivity) {
+    private val database by lazy { LocalStateDatabase(activity.applicationContext) }
+
+    @JavascriptInterface
+    fun loadState(): String = database.loadState() ?: ""
+
+    @JavascriptInterface
+    fun saveState(stateJson: String) { database.saveState(stateJson) }
+
+    @JavascriptInterface
+    fun clearState() { database.clearState() }
+
     @JavascriptInterface
     fun syncReminders(habitsJson: String) {
         ReminderScheduler.sync(activity.applicationContext, habitsJson)
@@ -149,6 +163,26 @@ private class HabitosBridge(private val activity: MainActivity) {
     fun requestReminderPermissions() {
         activity.requestReminderPermissions()
     }
+}
+
+/** SQLite local: una fila contiene el estado completo del perfil y se actualiza de forma atómica. */
+private class LocalStateDatabase(context: Context) : SQLiteOpenHelper(context, "mis_habitos.db", null, 1) {
+    override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE app_state (id INTEGER PRIMARY KEY CHECK(id = 1), payload TEXT NOT NULL)")
+    }
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) { }
+    @Synchronized fun loadState(): String? = readableDatabase.rawQuery("SELECT payload FROM app_state WHERE id = 1", null).use { cursor ->
+        if (cursor.moveToFirst()) cursor.getString(0) else null
+    }
+    @Synchronized fun saveState(payload: String) {
+        writableDatabase.beginTransaction()
+        try {
+            val values = ContentValues().apply { put("id", 1); put("payload", payload) }
+            writableDatabase.insertWithOnConflict("app_state", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            writableDatabase.setTransactionSuccessful()
+        } finally { writableDatabase.endTransaction() }
+    }
+    @Synchronized fun clearState() { writableDatabase.delete("app_state", "id = ?", arrayOf("1")) }
 }
 
 /** Programa un aviso por día elegido y guarda la configuración para el reinicio del teléfono. */

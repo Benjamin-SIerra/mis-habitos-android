@@ -860,6 +860,11 @@
               Anota inicio y fin. Puedes registrar sueño cruzando medianoche,
               por ejemplo de 22:00 a 06:00.
             </p>
+            <div class="field">
+              <label for="commuteMinutes">Tiempo de trayecto al trabajo (cada viaje)</label>
+              <input id="commuteMinutes" type="number" min="0" max="360" step="5" value="0" inputmode="numeric" />
+              <span id="commuteSummary" class="hint">Ida y regreso: 0 min en total. Se reserva antes y después del trabajo.</span>
+            </div>
             <div class="time-grid">
               <label
                 >Trabajo / estudio<input
@@ -1041,6 +1046,16 @@
             <button id="confirmHabitAnyway" class="primary" type="button">
               Agregar de todos modos
             </button>
+          </div>
+        </div>
+      </div>
+      <div id="confirmDialog" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+        <div class="modal-card">
+          <h2 id="confirmTitle">Confirmar acción</h2>
+          <p id="confirmMessage"></p>
+          <div class="modal-actions">
+            <button id="cancelConfirm" class="secondary" type="button">Cancelar</button>
+            <button id="acceptConfirm" class="primary" type="button">Confirmar</button>
           </div>
         </div>
       </div>
@@ -1228,6 +1243,7 @@
           work: { start: "", end: "" },
           sleep: { start: "", end: "" },
           travel: { start: "", end: "" },
+          commuteMinutes: 0,
           other: { start: "", end: "" },
         };
       }
@@ -1237,11 +1253,13 @@
       // Migra perfiles anteriores y adapta los hábitos de un día al arreglo de días.
       function loadState() {
         try {
-          let raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw)
-            raw = OLD_KEYS.map((key) => localStorage.getItem(key)).find(
-              Boolean,
-            );
+          let raw = window.HabitosAndroid?.loadState?.() || null;
+          if (!raw) {
+            try {
+              raw = localStorage.getItem(STORAGE_KEY);
+              if (!raw) raw = OLD_KEYS.map((key) => localStorage.getItem(key)).find(Boolean);
+            } catch (_) { raw = null; }
+          }
           if (!raw) return null;
           const saved = JSON.parse(raw);
           if (!saved.schedule || typeof saved.schedule[0]?.work === "number") {
@@ -1259,9 +1277,12 @@
             reminder: habit.reminder ?? false,
             reminderLead: habit.reminderLead ?? 10,
           }));
+          saved.schedule = saved.schedule.map((day) => ({ ...emptyDay(), ...day, commuteMinutes: Number(day.commuteMinutes || 0) }));
           saved.activeDates ||= [];
           saved.completed ||= {};
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+          const migrated = JSON.stringify(saved);
+          try { localStorage.setItem(STORAGE_KEY, migrated); } catch (_) {}
+          try { window.HabitosAndroid?.saveState?.(migrated); } catch (_) {}
           return saved;
         } catch (_) {
           return null;
@@ -1274,7 +1295,9 @@
       const selectedHabitDays = new Set();
       const reminderTimers = [];
       function saveState() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        const serialized = JSON.stringify(state);
+        try { localStorage.setItem(STORAGE_KEY, serialized); } catch (_) {}
+        try { window.HabitosAndroid?.saveState?.(serialized); } catch (_) {}
         // En Android, sincroniza los avisos con alarmas del sistema, incluso con la app cerrada.
         if (window.HabitosAndroid && state) {
           window.HabitosAndroid.syncReminders(
@@ -1384,6 +1407,23 @@
               label: `${labels[type]} (continúa desde ayer)`,
             });
           }
+        }
+        const daySchedule = state.schedule[day];
+        const workStart = minutes(daySchedule.work.start),
+          workEnd = minutes(daySchedule.work.end),
+          commuteMinutes = Math.max(0, Number(daySchedule.commuteMinutes || 0));
+        if (workStart !== null && workEnd !== null && workStart !== workEnd && commuteMinutes > 0) {
+          details.push({ start: Math.max(0, workStart - commuteMinutes), end: workStart, label: "Trayecto de ida" });
+          if (workEnd > workStart) {
+            details.push({ start: workEnd, end: Math.min(1440, workEnd + commuteMinutes), label: "Trayecto de regreso a casa" });
+          }
+        }
+        const previousSchedule = state.schedule[(day + 6) % 7];
+        const previousStart = minutes(previousSchedule.work.start),
+          previousEnd = minutes(previousSchedule.work.end),
+          previousCommute = Math.max(0, Number(previousSchedule.commuteMinutes || 0));
+        if (previousStart !== null && previousEnd !== null && previousEnd < previousStart && previousCommute > 0) {
+          details.push({ start: previousEnd, end: Math.min(1440, previousEnd + previousCommute), label: "Trayecto de regreso a casa" });
         }
         for (const habit of state.habits) {
           const days =
@@ -1552,7 +1592,13 @@
             state.schedule[activeDay][input.dataset.block][
               input.dataset.edge
             ] || "";
+        document.getElementById("commuteMinutes").value = state.schedule[activeDay].commuteMinutes || 0;
+        updateCommuteSummary();
         updateScheduleStatus();
+      }
+      function updateCommuteSummary() {
+        const commuteMinutes = Math.max(0, Number(state.schedule[activeDay].commuteMinutes || 0));
+        document.getElementById("commuteSummary").textContent = `Ida y regreso: ${2 * commuteMinutes} min en total (${commuteMinutes} min por viaje). Se reserva antes y después del trabajo.`;
       }
       function updateScheduleStatus() {
         const result = availability(activeDay),
@@ -1609,12 +1655,30 @@
           button.onclick = () => removeHabit(button.dataset.delete);
         });
       }
+      let confirmationAction = null;
+      function askConfirmation(title, message, action, acceptLabel = "Confirmar") {
+        document.getElementById("confirmTitle").textContent = title;
+        document.getElementById("confirmMessage").textContent = message;
+        document.getElementById("acceptConfirm").textContent = acceptLabel;
+        confirmationAction = action;
+        document.getElementById("confirmDialog").hidden = false;
+        document.getElementById("cancelConfirm").focus();
+      }
+      document.getElementById("cancelConfirm").onclick = () => {
+        document.getElementById("confirmDialog").hidden = true; confirmationAction = null;
+      };
+      document.getElementById("acceptConfirm").onclick = () => {
+        const action = confirmationAction; confirmationAction = null;
+        document.getElementById("confirmDialog").hidden = true;
+        if (action) action();
+      };
       function removeHabit(id) {
-        if (!confirm("¿Eliminar este hábito y su horario?")) return;
-        state.habits = state.habits.filter((h) => h.id !== id);
-        saveState();
-        renderMyHabits();
-        renderHome();
+        const habit = state.habits.find((item) => item.id === id);
+        if (!habit) return;
+        askConfirmation("Quitar hábito", `¿Quieres quitar “${habit.name}” y su horario?`, () => {
+          state.habits = state.habits.filter((h) => h.id !== id);
+          saveState(); renderMyHabits(); renderHome();
+        }, "Quitar hábito");
       }
       // Guarda cada compromiso como hora inicial/final y avisa si hay intervalos encima.
       for (const input of document.querySelectorAll("[data-block]"))
@@ -1625,6 +1689,13 @@
           updateScheduleStatus();
           renderHome();
         });
+      document.getElementById("commuteMinutes").addEventListener("change", (event) => {
+        const value = Number(event.target.value);
+        if (!Number.isFinite(value) || value < 0 || value > 360) { event.target.value = state.schedule[activeDay].commuteMinutes || 0; return; }
+        state.schedule[activeDay].commuteMinutes = Math.round(value);
+        event.target.value = state.schedule[activeDay].commuteMinutes;
+        saveState(); updateCommuteSummary(); updateScheduleStatus(); renderHome();
+      });
       // Opciones de actividad física aparecen solo si la persona responde que sí.
       document.querySelectorAll("[data-exercise]").forEach(
         (b) =>
@@ -1865,19 +1936,14 @@
         .querySelectorAll("[data-go]")
         .forEach((b) => (b.onclick = () => setScreen(b.dataset.go)));
       document.getElementById("resetBtn").onclick = () => {
-        if (
-          confirm(
-            "¿Borrar el perfil, horario y hábitos guardados en este dispositivo?",
-          )
-        ) {
-          localStorage.removeItem(STORAGE_KEY);
-          OLD_KEYS.forEach((key) => localStorage.removeItem(key));
+        askConfirmation("Borrar datos guardados", "¿Borrar el perfil, horario y hábitos guardados en este dispositivo?", () => {
+          try { localStorage.removeItem(STORAGE_KEY); OLD_KEYS.forEach((key) => localStorage.removeItem(key)); } catch (_) {}
+          try { window.HabitosAndroid?.clearState?.(); } catch (_) {}
           state = null;
           if (window.HabitosAndroid) window.HabitosAndroid.syncReminders("[]");
-          reminderTimers.forEach(clearTimeout);
-          reminderTimers.length = 0;
+          reminderTimers.forEach(clearTimeout); reminderTimers.length = 0;
           setScreen("setup");
-        }
+        }, "Borrar datos");
       };
       // Recupera el perfil guardado; si es una instalación nueva, muestra el cuestionario.
       if (state && state.profile) {
