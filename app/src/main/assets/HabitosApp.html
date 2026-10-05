@@ -1,0 +1,1893 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#fff8f0" />
+    <title>Mis Hábitos — hábitos a tu ritmo</title>
+    <style>
+      /* Colores pastel cálidos: crema, durazno, terracota suave y salvia. */
+      :root {
+        --paper: #fffaf5;
+        --cream: #f8eee3;
+        --peach: #f4cdb8;
+        --terra: #ad624d;
+        --terra-dark: #824535;
+        --sage: #dce8dc;
+        --sage-ink: #46634e;
+        --butter: #f5e7b7;
+        --ink: #352d29;
+        --muted: #81756d;
+        --line: #eadfd5;
+        --white: #fff;
+        --shadow: 0 12px 30px rgba(96, 67, 48, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f1e9e1;
+        color: var(--ink);
+        font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      #app {
+        max-width: 440px;
+        min-height: 100svh;
+        margin: auto;
+        background: var(--paper);
+        position: relative;
+        box-shadow: 0 0 50px #715c4818;
+        padding-bottom: 95px;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+      .page {
+        padding: 25px 22px 24px;
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--terra);
+        font-weight: 800;
+      }
+      .title {
+        font-family: Georgia, serif;
+        font-size: 30px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        margin: 7px 0 8px;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+      }
+      .topline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .brand {
+        font-family: Georgia, serif;
+        font-size: 20px;
+        font-weight: bold;
+        letter-spacing: -0.04em;
+      }
+      .brand span {
+        color: var(--terra);
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border: 0;
+        border-radius: 50%;
+        background: var(--peach);
+        display: grid;
+        place-items: center;
+        color: var(--terra-dark);
+        font-weight: 800;
+      }
+      .hero {
+        background: var(--cream);
+        border-radius: 26px;
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+        margin: 23px 0 17px;
+      }
+      .hero:after {
+        content: "";
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        right: -30px;
+        top: -45px;
+        background: var(--peach);
+        opacity: 0.65;
+      }
+      .hero .hello {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .hero h2 {
+        font-family: Georgia, serif;
+        font-weight: 500;
+        font-size: 27px;
+        line-height: 1.2;
+        margin: 7px 0 18px;
+        max-width: 290px;
+        position: relative;
+        z-index: 1;
+      }
+      .streak-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .streak-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        background: #fff9;
+        display: grid;
+        place-items: center;
+        color: var(--terra);
+        font-size: 19px;
+      }
+      .streak-row strong {
+        font-size: 14px;
+      }
+      .streak-row small {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 2px;
+      }
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin: 24px 0 12px;
+      }
+      .section-head h3 {
+        font-family: Georgia, serif;
+        font-size: 20px;
+        font-weight: 500;
+        margin: 0;
+      }
+      .text-btn {
+        border: 0;
+        background: transparent;
+        color: var(--terra);
+        font-size: 13px;
+        font-weight: 800;
+        padding: 8px 0;
+      }
+      .progress-card {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 17px;
+        box-shadow: var(--shadow);
+      }
+      .progress-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 11px;
+      }
+      .progress-line strong {
+        font-size: 14px;
+      }
+      .progress-line span {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .track {
+        height: 9px;
+        background: var(--cream);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .fill {
+        height: 100%;
+        width: 0;
+        background: var(--terra);
+        border-radius: inherit;
+        transition: width 0.3s;
+      }
+      .progress-foot {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 10px 0 0;
+        line-height: 1.45;
+      }
+      .today-list {
+        display: grid;
+        gap: 9px;
+      }
+      .mini-habit {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: #fff;
+        border: 1px solid var(--line);
+      }
+      .check {
+        width: 27px;
+        height: 27px;
+        border-radius: 9px;
+        border: 1.5px solid #cfc1b4;
+        background: white;
+        color: white;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .check.done {
+        background: var(--sage-ink);
+        border-color: var(--sage-ink);
+      }
+      .mini-habit .name {
+        font-size: 14px;
+        font-weight: 700;
+        flex: 1;
+      }
+      .mini-habit .mins {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .empty {
+        padding: 20px;
+        text-align: center;
+        border: 1px dashed #d9c9ba;
+        border-radius: 18px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(440px, 100%);
+        height: 78px;
+        background: #fffdf9ed;
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        display: none;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 7px 13px calc(7px + env(safe-area-inset-bottom));
+        z-index: 5;
+      }
+      .nav.show {
+        display: grid;
+      }
+      .nav button {
+        border: 0;
+        background: transparent;
+        color: #9a8e83;
+        font-size: 10px;
+        font-weight: 700;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 3px;
+      }
+      .nav button.active {
+        color: var(--terra);
+      }
+      .nav .ico {
+        font-size: 19px;
+        line-height: 1;
+      }
+      /* Campos, acciones y bloques de horario. */
+      .field {
+        display: grid;
+        gap: 7px;
+        margin: 16px 0;
+      }
+      .field label,
+      .time-grid label {
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: white;
+        padding: 0 14px;
+        color: var(--ink);
+        outline: none;
+      }
+      .field input:focus,
+      .field select:focus,
+      .time-grid input:focus {
+        border-color: var(--terra);
+        box-shadow: 0 0 0 3px #ad624d20;
+      }
+      .hint {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+      .primary {
+        width: 100%;
+        min-height: 50px;
+        border: 0;
+        border-radius: 15px;
+        background: var(--terra);
+        color: white;
+        font-weight: 800;
+        margin-top: 8px;
+      }
+      .choice-row {
+        display: flex;
+        gap: 9px;
+      }
+      .choice-row button {
+        flex: 1;
+        min-height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: white;
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .choice-row button.selected {
+        background: var(--sage);
+        border-color: #b6cbb8;
+        color: var(--sage-ink);
+      }
+      .day-strip {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin: 13px 0 17px;
+      }
+      .day {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 0;
+        background: #fff;
+        color: var(--muted);
+        font-size: 10px;
+      }
+      .day b {
+        display: block;
+        font-size: 13px;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+      .day.selected {
+        background: var(--terra);
+        color: #fff;
+        border-color: var(--terra);
+      }
+      .day.selected b {
+        color: #fff;
+      }
+      .schedule,
+      .habit-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 15px;
+        margin-top: 11px;
+      }
+      .schedule-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .schedule-top strong {
+        font-size: 14px;
+      }
+      .remaining {
+        background: var(--butter);
+        color: #715d2b;
+        border-radius: 10px;
+        padding: 6px 9px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .remaining.conflict {
+        background: #f3d4cf;
+        color: #8c3d32;
+      }
+      .time-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .time-grid label {
+        display: grid;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .time-grid input {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 0 9px;
+        background: var(--paper);
+        color: var(--ink);
+      }
+      .error {
+        color: #a33e34;
+        font-size: 12px;
+        min-height: 16px;
+        margin: 8px 0;
+      }
+      .activity-summary {
+        background: var(--sage);
+        border-radius: 18px;
+        padding: 15px;
+        margin-top: 17px;
+      }
+      .habit-card {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px;
+        margin: 9px 0;
+      }
+      .habit-mark {
+        width: 37px;
+        height: 37px;
+        display: grid;
+        place-items: center;
+        border-radius: 13px;
+        background: var(--cream);
+        font-size: 18px;
+        flex: none;
+      }
+      .habit-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .habit-info strong {
+        display: block;
+        font-size: 14px;
+      }
+      .habit-info small {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        margin-top: 4px;
+      }
+      .habit-time {
+        font-size: 11px;
+        color: var(--terra-dark);
+        font-weight: 700;
+      }
+      .delete-btn {
+        border: 0;
+        background: transparent;
+        color: #a99789;
+        font-size: 18px;
+        padding: 6px;
+      }
+      .notice {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 16px;
+        line-height: 1.5;
+      }
+      /* Botones accesibles para elegir uno o varios días de repetición. */
+      .day-picker {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .day-pick {
+        min-height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .day-pick.selected {
+        background: var(--sage);
+        border-color: #b6cbb8;
+        color: var(--sage-ink);
+      }
+      .reminder-row {
+        display: grid;
+        grid-template-columns: 1fr 110px;
+        gap: 10px;
+        align-items: center;
+        padding: 13px;
+        background: var(--cream);
+        border-radius: 14px;
+        margin-top: 18px;
+      }
+      .reminder-row label {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+      }
+      .reminder-row select {
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: white;
+        padding: 0 8px;
+        color: var(--ink);
+      }
+      .modal[hidden] {
+        display: none;
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: #352d2988;
+      }
+      .modal-card {
+        width: min(390px, 100%);
+        background: var(--paper);
+        border-radius: 22px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+      }
+      .modal-card h2 {
+        font:
+          500 25px Georgia,
+          serif;
+        margin: 0 0 9px;
+      }
+      .modal-card p,
+      .conflict-list {
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .conflict-list {
+        padding-left: 20px;
+        color: var(--terra-dark);
+        font-weight: 700;
+      }
+      .modal-actions {
+        display: grid;
+        gap: 9px;
+        margin-top: 18px;
+      }
+      .modal-actions .secondary {
+        min-height: 48px;
+      }
+      .modal-actions .primary {
+        margin: 0;
+      }
+      /* Lectura diaria: textos breves y cómodos de recorrer en móvil. */
+      .motivation-banner {
+        background: var(--butter);
+        border: 1px solid #e8d8a9;
+        border-radius: 22px;
+        padding: 19px;
+        margin: 18px 0;
+      }
+      .motivation-banner h2 {
+        font:
+          500 25px Georgia,
+          serif;
+        line-height: 1.2;
+        margin: 9px 0;
+        color: var(--ink);
+      }
+      .motivation-banner p {
+        color: #71634a;
+        font-size: 13px;
+        line-height: 1.55;
+        margin: 0;
+      }
+      .reading-meta {
+        margin-top: 13px;
+        color: #796b50;
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .daily-reading {
+        display: grid;
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .reading-item {
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        gap: 10px;
+        align-items: start;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fff;
+      }
+      .reading-number {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--sage);
+        color: var(--sage-ink);
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .reading-item p {
+        margin: 2px 0 0;
+        color: var(--ink);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+      .motivation-close {
+        padding: 15px 16px;
+        margin: 16px 0 24px;
+        border-radius: 16px;
+        background: #f4e5df;
+        color: #765346;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .nav {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      @media (min-width: 700px) {
+        body {
+          padding: 22px 0;
+        }
+        #app {
+          border-radius: 28px;
+          min-height: calc(100svh - 44px);
+          overflow: hidden;
+        }
+        .nav {
+          bottom: 22px;
+          border-radius: 0 0 28px 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app">
+      <!-- Primera pantalla: perfil y actividad actual para personalizar la experiencia. -->
+      <section id="setup" class="screen active">
+        <div class="page">
+          <div class="topline">
+            <div class="brand">Mis Hábitos<span>.</span></div>
+            <div class="eyebrow">Tu ritmo, tus hábitos</div>
+          </div>
+          <div class="eyebrow">Antes de empezar</div>
+          <h1 class="title">Un plan que se adapta a ti.</h1>
+          <p class="sub">
+            Cuéntanos un poco sobre ti. Tus respuestas se guardan en este
+            dispositivo.
+          </p>
+          <form id="profileForm">
+            <div class="field">
+              <label for="nickname">¿Cómo te llamamos?</label
+              ><input
+                id="nickname"
+                maxlength="30"
+                placeholder="Tu nombre o apodo"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="age">¿Qué edad tienes?</label
+              ><input
+                id="age"
+                type="number"
+                min="13"
+                max="120"
+                placeholder="13 o más"
+                required
+              /><small class="hint"
+                >Esta versión está pensada para personas de 13 años en
+                adelante.</small
+              >
+            </div>
+            <div class="field">
+              <label>¿Realizas actividad física?</label>
+              <div class="choice-row">
+                <button type="button" class="selected" data-exercise="no">
+                  No por ahora</button
+                ><button type="button" data-exercise="yes">Sí, hago</button>
+              </div>
+            </div>
+            <div id="exerciseFields" hidden>
+              <div class="field">
+                <label for="exerciseType">¿Qué actividad realizas?</label
+                ><input
+                  id="exerciseType"
+                  maxlength="50"
+                  placeholder="Ej. caminar, bailar, gimnasio"
+                />
+              </div>
+              <div class="field">
+                <label for="exerciseMinutes">¿Cuánto dura cada sesión?</label
+                ><input
+                  id="exerciseMinutes"
+                  type="number"
+                  min="1"
+                  max="1440"
+                  placeholder="Minutos"
+                />
+              </div>
+              <div class="field">
+                <label for="exerciseDays">¿Cuántos días por semana?</label
+                ><select id="exerciseDays">
+                  <option value="1">1 día</option>
+                  <option value="2">2 días</option>
+                  <option value="3" selected>3 días</option>
+                  <option value="4">4 días</option>
+                  <option value="5">5 días</option>
+                  <option value="6">6 días</option>
+                  <option value="7">Todos los días</option>
+                </select>
+              </div>
+            </div>
+            <p id="formError" class="error" aria-live="polite"></p>
+            <button class="primary" type="submit">Crear mi espacio</button>
+          </form>
+          <p class="notice">
+            Tus datos se guardan en este dispositivo y no se envían a un servidor.
+          </p>
+        </div>
+      </section>
+      <!-- Inicio: frase del día, seguimiento, avance y agenda de hoy. -->
+      <section id="home" class="screen">
+        <div class="page">
+          <div class="topline">
+            <div class="brand">Mis Hábitos<span>.</span></div>
+            <button class="avatar" id="avatar" aria-label="Perfil">M</button>
+          </div>
+          <div class="eyebrow" id="todayLabel">TU ESPACIO</div>
+          <h1 class="title">Hola, <span id="greetingName">amiga</span>.</h1>
+          <p class="sub">Pequeños pasos, a tu propio ritmo.</p>
+          <div class="hero">
+            <div class="hello">Tu constancia también cuenta</div>
+            <h2 id="dailyPhrase">Un día a la vez, sin prisa.</h2>
+            <div class="streak-row">
+              <div class="streak-icon">✿</div>
+              <div>
+                <strong id="streakCount">0 días con seguimiento</strong
+                ><small>Registrar tu día ya es un buen comienzo.</small>
+              </div>
+            </div>
+          </div>
+          <div class="section-head">
+            <h3>Tu progreso de hoy</h3>
+            <button class="text-btn" data-go="myHabits">Ver tus hábitos</button>
+          </div>
+          <div class="progress-card">
+            <div class="progress-line">
+              <strong>Hábitos completados</strong
+              ><span id="progressValue">0 de 0</span>
+            </div>
+            <div class="track"><div id="progressFill" class="fill"></div></div>
+            <p id="progressCaption" class="progress-foot">
+              Agrega un hábito para empezar a registrar tu avance.
+            </p>
+          </div>
+          <div class="section-head">
+            <h3>Para hoy</h3>
+            <button class="text-btn" data-go="myHabits">Organizar →</button>
+          </div>
+          <div id="todayList" class="today-list"></div>
+          <div class="section-head">
+            <h3>Tu tiempo</h3>
+            <button class="text-btn" data-go="myHabits">Ver horario →</button>
+          </div>
+          <div class="progress-card">
+            <div class="progress-line">
+              <strong>Tiempo disponible hoy</strong
+              ><span id="todayRemaining">24 h</span>
+            </div>
+            <div class="progress-foot">
+              Es una estimación basada en los horarios que registraste.
+            </div>
+          </div>
+          <div class="notice">
+            <button class="text-btn" id="resetBtn">
+              Borrar mis datos guardados
+            </button>
+          </div>
+        </div>
+      </section>
+      <!-- Tus hábitos: compromisos por intervalo y lista de hábitos creados. -->
+      <section id="myHabits" class="screen">
+        <div class="page">
+          <div class="topline">
+            <div class="brand">Mis Hábitos<span>.</span></div>
+            <div class="eyebrow">TU ESPACIO</div>
+          </div>
+          <div class="eyebrow">A tu manera</div>
+          <h1 class="title">Tus hábitos.</h1>
+          <p class="sub">
+            Revisa lo que quieres practicar y encuentra un espacio realista en
+            tu semana.
+          </p>
+          <p id="notificationStatus" class="notice" aria-live="polite"></p>
+          <div id="exerciseSummary"></div>
+          <div class="section-head">
+            <h3>Mi horario semanal</h3>
+            <span class="hint">Elige un día</span>
+          </div>
+          <div id="dayStrip" class="day-strip"></div>
+          <div class="schedule">
+            <div class="schedule-top">
+              <strong id="scheduleDay">Lunes</strong
+              ><span class="remaining" id="remainingBadge"
+                >24 h disponibles</span
+              >
+            </div>
+            <p class="hint">
+              Anota inicio y fin. Puedes registrar sueño cruzando medianoche,
+              por ejemplo de 22:00 a 06:00.
+            </p>
+            <div class="time-grid">
+              <label
+                >Trabajo / estudio<input
+                  type="time"
+                  data-block="work"
+                  data-edge="start" /></label
+              ><label
+                >Hasta<input type="time" data-block="work" data-edge="end"
+              /></label>
+              <label
+                >Sueño<input
+                  type="time"
+                  data-block="sleep"
+                  data-edge="start" /></label
+              ><label
+                >Hasta<input type="time" data-block="sleep" data-edge="end"
+              /></label>
+              <label
+                >Traslados<input
+                  type="time"
+                  data-block="travel"
+                  data-edge="start" /></label
+              ><label
+                >Hasta<input type="time" data-block="travel" data-edge="end"
+              /></label>
+              <label
+                >Otros compromisos<input
+                  type="time"
+                  data-block="other"
+                  data-edge="start" /></label
+              ><label
+                >Hasta<input type="time" data-block="other" data-edge="end"
+              /></label>
+            </div>
+            <p class="error" id="scheduleError" aria-live="polite"></p>
+            <p class="progress-foot">
+              El tiempo libre es una estimación; tú eliges cómo invertirlo.
+            </p>
+          </div>
+          <div class="section-head">
+            <h3>Hábitos agregados</h3>
+            <button class="text-btn" data-go="addHabitScreen">+ Agregar</button>
+          </div>
+          <div id="habitList"></div>
+        </div>
+      </section>
+      <!-- Agregar hábito: permite elegir día y hora exacta de inicio y fin. -->
+      <section id="addHabitScreen" class="screen">
+        <div class="page">
+          <div class="topline">
+            <button class="text-btn" data-go="myHabits">← Tus hábitos</button>
+            <div class="brand">Mis Hábitos<span>.</span></div>
+          </div>
+          <div class="eyebrow">Un paso a la vez</div>
+          <h1 class="title">Agregar hábito.</h1>
+          <p class="sub">
+            Elige cuándo quieres dedicarle tiempo. Podrás ajustar tu plan
+            después.
+          </p>
+          <form id="habitForm">
+            <div class="field">
+              <label for="habitName">¿Qué quieres hacer?</label
+              ><input
+                id="habitName"
+                maxlength="45"
+                placeholder="Ej. Practicar programación"
+                required
+              />
+            </div>
+            <div class="field">
+              <label>¿Qué días quieres hacerlo? Puedes elegir varios.</label>
+              <div class="day-picker" id="habitDayPicker">
+                <button type="button" class="day-pick" data-habit-day="0">
+                  Lun
+                </button>
+                <button type="button" class="day-pick" data-habit-day="1">
+                  Mar
+                </button>
+                <button type="button" class="day-pick" data-habit-day="2">
+                  Mié
+                </button>
+                <button type="button" class="day-pick" data-habit-day="3">
+                  Jue
+                </button>
+                <button type="button" class="day-pick" data-habit-day="4">
+                  Vie
+                </button>
+                <button type="button" class="day-pick" data-habit-day="5">
+                  Sáb
+                </button>
+                <button type="button" class="day-pick" data-habit-day="6">
+                  Dom
+                </button>
+              </div>
+            </div>
+            <div class="time-grid">
+              <label
+                >Desde<input
+                  id="habitStart"
+                  type="time"
+                  value="15:00"
+                  required /></label
+              ><label
+                >Hasta<input id="habitEnd" type="time" value="16:00" required
+              /></label>
+            </div>
+            <p class="hint">
+              Ejemplo: de 15:00 a 16:00 para estudiar o programar. La duración
+              se calcula sola.
+            </p>
+            <div class="reminder-row">
+              <label for="habitReminder"
+                ><input id="habitReminder" type="checkbox" checked /> Recordarme
+                antes de empezar</label
+              >
+              <select
+                id="reminderLead"
+                aria-label="Minutos antes del recordatorio"
+              >
+                <option value="5">5 min antes</option>
+                <option value="10" selected>10 min antes</option>
+                <option value="15">15 min antes</option>
+                <option value="30">30 min antes</option>
+              </select>
+            </div>
+            <p class="hint">
+              En Android, activa las notificaciones y las alarmas exactas para recibir tus avisos.
+            </p>
+            <p class="error" id="habitError" aria-live="polite"></p>
+            <button class="primary" type="submit">Guardar hábito</button>
+          </form>
+          <p class="notice">
+            Si el horario coincide con trabajo, sueño u otro hábito, la app te
+            avisará.
+          </p>
+        </div>
+      </section>
+      <!-- Inspiración: una lectura original de diez párrafos que cambia a diario. -->
+      <section id="motivation" class="screen">
+        <div class="page">
+          <div class="topline">
+            <div class="brand">Mis Hábitos<span>.</span></div>
+            <div class="eyebrow">PAUSA DE HOY</div>
+          </div>
+          <h1 class="title">Motivación para ti.</h1>
+          <p class="sub">
+            Una lectura breve para acompañarte, sin exigirte hacerlo todo de
+            golpe.
+          </p>
+          <div class="motivation-banner">
+            <div class="eyebrow" id="motivationDate">Lectura de hoy</div>
+            <h2 id="motivationTitle"></h2>
+            <p id="motivationIntro"></p>
+            <div class="reading-meta">Lectura diaria · 10 párrafos</div>
+          </div>
+          <div id="motivationParagraphs" class="daily-reading"></div>
+          <div id="motivationClosing" class="motivation-close"></div>
+
+        </div>
+      </section>
+      <!-- Confirmación no bloqueante: muestra cada compromiso que coincide. -->
+      <div
+        id="conflictDialog"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="conflictTitle"
+        hidden
+      >
+        <div class="modal-card">
+          <h2 id="conflictTitle">Este horario interfiere</h2>
+          <p>El hábito coincide con parte de tu rutina en estos días:</p>
+          <ul id="conflictList" class="conflict-list"></ul>
+          <p>¿Quieres cambiar el horario o agregarlo de todos modos?</p>
+          <div class="modal-actions">
+            <button id="changeHabitTime" class="secondary" type="button">
+              Cambiar horario
+            </button>
+            <button id="confirmHabitAnyway" class="primary" type="button">
+              Agregar de todos modos
+            </button>
+          </div>
+        </div>
+      </div>
+      <nav id="nav" class="nav" aria-label="Navegación principal">
+        <button class="active" data-screen="home">
+          <span class="ico">⌂</span>Inicio</button
+        ><button data-screen="myHabits">
+          <span class="ico">♡</span>Tus hábitos</button
+        ><button data-screen="addHabitScreen">
+          <span class="ico">＋</span>Agregar hábitos</button
+        ><button data-screen="motivation">
+          <span class="ico">✿</span>Motivación
+        </button>
+      </nav>
+    </main>
+    <script>
+      // Las nuevas claves conservan datos previos y agregan días múltiples y recordatorios.
+      const STORAGE_KEY = "ritual-habitos-v3";
+      const OLD_KEYS = ["ritual-habitos-v2", "ritual-habitos-v1"];
+      const dayNames = [
+          "Lunes",
+          "Martes",
+          "Miércoles",
+          "Jueves",
+          "Viernes",
+          "Sábado",
+          "Domingo",
+        ],
+        shortDays = ["L", "M", "X", "J", "V", "S", "D"];
+      const blockNames = ["work", "sleep", "travel", "other"];
+      // Frases breves de Inicio: se mantienen además de la lectura larga.
+      const phrases = [
+        "Un día a la vez, sin prisa.",
+        "Lo pequeño también cuenta.",
+        "Avanzar despacio sigue siendo avanzar.",
+        "Hoy puedes empezar de nuevo.",
+        "Haz espacio para lo que te hace bien.",
+        "Tu ritmo también es un buen ritmo.",
+        "Cada intento suma experiencia.",
+        "No necesitas hacerlo perfecto.",
+        "Un paso amable contigo vale mucho.",
+        "La constancia se construye con paciencia.",
+        "Hoy basta con comenzar.",
+        "Tu progreso no tiene que parecerse al de nadie.",
+        "Cuida el proceso; lo demás llega después.",
+        "Un hábito crece con tiempo y cariño.",
+      ];
+      const dailyReadings = [
+        {
+          title: "Practica la persona que quieres ser",
+          intro:
+            "No necesitas cambiar toda tu vida hoy. Puedes comenzar con una decisión pequeña que vaya en la dirección que te importa.",
+          paragraphs: [
+            "Las metas suelen hablar de un resultado futuro. Tus decisiones de hoy también pueden mostrar la clase de vida que quieres cuidar.",
+            "Dedicar unos minutos a algo importante es una manera concreta de decirte: esto merece un lugar en mi día.",
+            "No tienes que ganarte una etiqueta nueva. Puedes estar aprendiendo, probando y creciendo a tu propio ritmo.",
+            "Si alguna vez te has llamado distraído, desordenada o poco constante, recuerda que una descripción no tiene que ser una condena.",
+            "Una acción sencilla —abrir el cuaderno, preparar la ropa o guardar un objeto— puede ser una primera prueba de que puedes elegir distinto.",
+            "La práctica vale incluso cuando nadie la ve. Cada intento te permite conocerte mejor y descubrir qué te ayuda.",
+            "No conviertas un día difícil en una definición de quién eres. Un día es una parte de tu historia, no toda la historia.",
+            "Elige un hábito que represente algo que aprecias: aprender, descansar, cuidar tu cuerpo o estar presente con alguien.",
+            "Reconoce lo que sí hiciste sin compararlo con el ritmo de otra persona. Tu camino puede ser pequeño y seguir siendo valioso.",
+            "Hoy no tienes que demostrarlo todo. Basta con elegir un siguiente paso que se sienta posible y amable contigo.",
+          ],
+          closing:
+            "Una acción pequeña no resuelve todo, pero puede ser el comienzo de una dirección nueva.",
+        },
+        {
+          title: "Una cosa a la vez",
+          intro:
+            "Cuando todo parece importante, elegir una sola prioridad puede devolverte calma y claridad.",
+          paragraphs: [
+            "A veces queremos mejorar muchas áreas al mismo tiempo. Ese deseo nace de la ilusión, pero cargar con todo puede cansarte antes de empezar.",
+            "Prueba elegir una batalla para esta semana: algo que de verdad te gustaría cuidar, no algo que otras personas esperan de ti.",
+            "Haz que el comienzo sea pequeño. Leer una página, caminar unos minutos o practicar una canción también cuenta como empezar.",
+            "Un paso que cabe en tu horario tiene más oportunidad de repetirse que un plan perfecto que no encuentra espacio.",
+            "Si tienes varias ideas, anótalas para después. Guardarlas no significa renunciar; significa dar atención completa a una por ahora.",
+            "Pregúntate qué sería suficiente por hoy. Una respuesta realista puede quitarle presión a una tarea que parecía enorme.",
+            "No necesitas sentir entusiasmo todo el tiempo. Puedes apoyarte en una señal: después del desayuno, al llegar a casa o antes de dormir.",
+            "Cuando tu energía sea baja, adapta la versión del hábito. Cinco minutos pueden mantener el hilo hasta que tengas más tiempo.",
+            "Celebrar una repetición tranquila ayuda más que castigarte por no hacerlo todo. La constancia se construye con espacio para volver.",
+            "Escoge un paso para hoy y deja que los demás esperen. Tu atención es limitada; úsala en lo que elegiste cuidar.",
+          ],
+          closing:
+            "No es poco elegir una sola cosa: es una forma de darle espacio para crecer.",
+        },
+        {
+          title: "Observa tu día con curiosidad",
+          intro:
+            "Entender lo que te pasa puede ser más útil que regañarte por ello.",
+          paragraphs: [
+            "Antes de cambiar una rutina, vale la pena mirar cómo ocurre. Observa un momento de tu día sin intentar juzgarlo.",
+            "¿Qué suele pasar justo antes de que pospongas algo? Tal vez tienes hambre, estás cansado o no sabes cuál es el primer paso.",
+            "Nombrar una dificultad con calma no la hace más grande. Puede ayudarte a encontrar una respuesta que sí te sirva.",
+            "Si el teléfono te distrae, prueba dejarlo un poco más lejos durante una tarea corta. No hace falta declarar una guerra contra él.",
+            "Si una actividad te parece enorme, divídela: preparar materiales puede ser hoy; terminar todo, otro día.",
+            "Pregúntate qué parte del entorno facilita tu hábito y cuál lo vuelve más difícil. A veces un pequeño cambio alrededor ayuda mucho.",
+            "También observa cuándo tienes más energía. No todos los horarios funcionan igual para todas las personas.",
+            "Puedes anotar una sola cosa que notaste hoy. No es un examen; es información para diseñar una rutina más realista.",
+            "Si algo no funcionó, intenta describir el hecho sin insultarte: ‘no encontré un espacio’ ofrece más pistas que ‘soy un fracaso’.",
+            "La curiosidad te deja aprender y probar otra estrategia. Trátate como tratarías a alguien querido que está intentando mejorar.",
+          ],
+          closing:
+            "La información sobre tu día es una herramienta; no una razón para culparte.",
+        },
+        {
+          title: "Dale dirección a tus pasos",
+          intro:
+            "Una idea se vuelve más cercana cuando la conviertes en algo pequeño, claro y posible en tu calendario.",
+          paragraphs: [
+            "Imaginar cómo te gustaría sentirte o vivir puede ayudarte a elegir. No hace falta tener un plan perfecto para empezar a orientarte.",
+            "Piensa en una dirección que te importe: aprender algo, sentir más energía, cuidar una relación o tener más orden.",
+            "Luego pregúntate qué podría acercarte un poco a esa dirección durante este mes. Busca una acción que dependa en parte de ti.",
+            "Hazla concreta para mañana: qué harás, cuánto tiempo y en qué momento aproximado. Un plan amable deja margen para imprevistos.",
+            "Tu horario también merece tener en cuenta el sueño, la escuela, el trabajo, los traslados y el descanso.",
+            "Si no cabe en tu semana, no significa que no te importe. Quizá necesitas un paso menor o un horario diferente.",
+            "Puedes revisar tu plan al final del día: ¿qué ocurrió?, ¿qué aprendiste?, ¿qué sería útil ajustar mañana?",
+            "No midas tu valor por una lista completada. La lista es una herramienta para organizarte, no una medida de quién eres.",
+            "Deja que tus objetivos te orienten, pero permite que tu plan cambie cuando cambian tus necesidades.",
+            "Hoy convierte una intención en una cita breve contigo. Elige una hora realista y deja que el primer paso sea sencillo.",
+          ],
+          closing:
+            "Una dirección clara y un primer espacio en tu agenda pueden bastar para empezar.",
+        },
+        {
+          title: "Ajusta el plan, no tu valor",
+          intro:
+            "Aprender a cambiar de estrategia también forma parte de avanzar.",
+          paragraphs: [
+            "Un plan puede necesitar ajustes sin que eso signifique que tú fallaste. La vida real trae cambios, cansancio y sorpresas.",
+            "Si una rutina no funcionó, pregúntate qué parte fue difícil: ¿el horario, la duración, el lugar o la forma de empezar?",
+            "Prueba modificar una cosa cada vez. Un hábito más corto o en otro momento puede encajar mejor con tu semana.",
+            "Cuando algo se interponga, busca una alternativa segura y realista. Descansar o pedir apoyo también puede ser una buena decisión.",
+            "Llevar un registro sencillo te ayuda a notar qué intentaste y qué resultado tuvo, sin convertirlo en una competencia.",
+            "Un tropiezo contiene pistas. Puedes usar esas pistas para diseñar un paso distinto, en lugar de repetir exactamente lo mismo.",
+            "Pedir ayuda no te quita autonomía. Una persona de confianza puede ayudarte a pensar opciones que no habías visto.",
+            "Date permiso de empezar de nuevo sin esperar al lunes, al próximo mes o al momento perfecto.",
+            "Progreso no siempre significa hacer más. A veces significa encontrar una forma más sostenible de seguir.",
+            "Elige un ajuste pequeño para probar hoy. Después observa cómo te fue y decide con calma cuál será el siguiente.",
+          ],
+          closing:
+            "Puedes cambiar el camino sin abandonar lo que te importa ni tratarte con dureza.",
+        },
+        {
+          title: "Haz espacio para lo que importa",
+          intro:
+            "Tus objetivos pueden convivir con límites que protejan tu salud, tus relaciones y tu descanso.",
+          paragraphs: [
+            "Piensa en tu semana como un espacio compartido por responsabilidades, relaciones, descanso y cosas que disfrutas.",
+            "Una meta valiosa no necesita ocupar cada minuto. También puedes decidir qué no vas a sacrificar para perseguirla.",
+            "Elige una misión pequeña para hoy: algo que puedas completar o practicar en el tiempo que sí tienes.",
+            "Divide una tarea larga en etapas. Cada etapa terminada te muestra dónde estás y qué falta, sin exigir resolverlo todo de una vez.",
+            "Pon límites a las distracciones con amabilidad: silenciar una notificación durante un rato puede proteger tu atención.",
+            "Si aparece una nueva oportunidad, no tienes que aceptarla de inmediato. Puedes pensar si encaja con tus prioridades y tu energía.",
+            "Incluye actividades que te dan alegría, conexión o descanso. No son premios que debas merecer: también forman parte de una vida cuidada.",
+            "Tu plan puede tener reglas propias, como respetar la hora de dormir o reservar un momento para tu familia.",
+            "Cuando tienes claro qué importa, resulta más fácil elegir a qué decir que sí y a qué decir ‘ahora no’.",
+            "Hoy escoge una cosa importante y una cosa que quieras proteger mientras la haces. Las dos decisiones cuentan.",
+          ],
+          closing:
+            "Avanzar también significa construir una rutina en la que puedas vivir bien.",
+        },
+        {
+          title: "Crecer también es cuidarte",
+          intro:
+            "No tienes que estar en modo de mejora todo el tiempo para que tu esfuerzo tenga sentido.",
+          paragraphs: [
+            "El descanso es una necesidad, no una señal de que perdiste el rumbo. Tu energía también forma parte del plan.",
+            "Hay días para dar un paso grande y días para mantener una versión mínima del hábito. Ambos tipos de día son normales.",
+            "Si hoy no puedes hacer lo planeado, pregúntate qué necesitas: dormir, comer, pedir ayuda o reducir la tarea.",
+            "Una pausa breve puede ayudarte a regresar con más calma. No tienes que justificar cada momento de descanso.",
+            "Cuida la forma en que te hablas cuando algo cuesta. Puedes reconocer la dificultad sin decidir que siempre será así.",
+            "Tus vínculos también importan. Reservar tiempo para escuchar o compartir con alguien puede ser parte de tus prioridades.",
+            "No midas una semana solo por lo que produjiste. También cuenta haber atravesado un día complicado con paciencia.",
+            "Si una meta empieza a quitarte sueño o tranquilidad de forma constante, vale la pena conversarlo con una persona de confianza.",
+            "Puedes aspirar a mejorar y, al mismo tiempo, tratarte con respeto en el punto en que estás ahora.",
+            "Por hoy, elige un gesto pequeño de cuidado. A veces ese es el paso que te permite continuar mañana.",
+          ],
+          closing:
+            "Tu bienestar no es un obstáculo del camino: es parte del camino.",
+        },
+      ];
+      function emptyDay() {
+        return {
+          work: { start: "", end: "" },
+          sleep: { start: "", end: "" },
+          travel: { start: "", end: "" },
+          other: { start: "", end: "" },
+        };
+      }
+      function defaultSchedule() {
+        return dayNames.map(() => emptyDay());
+      }
+      // Migra perfiles anteriores y adapta los hábitos de un día al arreglo de días.
+      function loadState() {
+        try {
+          let raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw)
+            raw = OLD_KEYS.map((key) => localStorage.getItem(key)).find(
+              Boolean,
+            );
+          if (!raw) return null;
+          const saved = JSON.parse(raw);
+          if (!saved.schedule || typeof saved.schedule[0]?.work === "number") {
+            saved.schedule = defaultSchedule();
+          }
+          saved.habits = (saved.habits || []).map((habit) => ({
+            ...habit,
+            days: Array.isArray(habit.days)
+              ? habit.days
+              : Number.isInteger(habit.day)
+                ? [habit.day]
+                : [],
+            start: habit.start || "",
+            end: habit.end || "",
+            reminder: habit.reminder ?? false,
+            reminderLead: habit.reminderLead ?? 10,
+          }));
+          saved.activeDates ||= [];
+          saved.completed ||= {};
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+          return saved;
+        } catch (_) {
+          return null;
+        }
+      }
+      let state = loadState(),
+        activeDay = localDayIndex(),
+        exerciseAnswer = "no",
+        pendingHabit = null;
+      const selectedHabitDays = new Set();
+      const reminderTimers = [];
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        // En Android, sincroniza los avisos con alarmas del sistema, incluso con la app cerrada.
+        if (window.HabitosAndroid && state) {
+          window.HabitosAndroid.syncReminders(
+            JSON.stringify({
+              habits: state.habits || [],
+              completed: state.completed || {},
+            }),
+          );
+        }
+      }
+      function localDateKey(date = new Date()) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      }
+      function localDayIndex(date = new Date()) {
+        return (date.getDay() + 6) % 7;
+      }
+      function minutes(time) {
+        if (!time) return null;
+        const [h, m] = time.split(":").map(Number);
+        return h * 60 + m;
+      }
+      function fmtTime(time) {
+        return time
+          ? new Intl.DateTimeFormat("es-MX", {
+              hour: "numeric",
+              minute: "2-digit",
+            }).format(new Date(`2000-01-01T${time}:00`))
+          : "";
+      }
+      function fmtHours(min) {
+        const h = min / 60;
+        return Number.isInteger(h) ? `${h} h` : `${h.toFixed(1)} h`;
+      }
+      function esc(s) {
+        return String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+      // El streak cuenta días usando la app, no solo días en que completó todos los hábitos.
+      function recordActiveDay() {
+        if (!state) return;
+        const today = localDateKey();
+        if (!state.activeDates.includes(today)) {
+          state.activeDates.push(today);
+          saveState();
+        }
+      }
+      function streak() {
+        if (!state || !state.activeDates.length) return 0;
+        const dates = new Set(state.activeDates);
+        const date = new Date();
+        if (!dates.has(localDateKey(date))) date.setDate(date.getDate() - 1);
+        let n = 0;
+        while (dates.has(localDateKey(date))) {
+          n++;
+          date.setDate(date.getDate() - 1);
+        }
+        return n;
+      }
+      // Genera segmentos de tiempo en minutos; los compromisos que cruzan medianoche se dividen en dos días.
+      function segments(start, end) {
+        const a = minutes(start),
+          b = minutes(end);
+        if (a === null || b === null || a === b) return [];
+        return b > a ? [[a, b]] : [[a, 1440]];
+      }
+      // Devuelve intervalos con nombre de la actividad para explicar cada interferencia.
+      function intervalDetailsForDay(day) {
+        const details = [];
+        const labels = {
+          work: "Trabajo / estudio",
+          sleep: "Sueño",
+          travel: "Traslados",
+          other: "Otros compromisos",
+        };
+        for (const type of blockNames) {
+          const today = state.schedule[day][type];
+          const a = minutes(today.start),
+            b = minutes(today.end);
+          if (a !== null && b !== null && a !== b) {
+            details.push({
+              start: a,
+              end: b > a ? b : 1440,
+              label: labels[type],
+            });
+          }
+          const previous = state.schedule[(day + 6) % 7][type];
+          const prevStart = minutes(previous.start),
+            prevEnd = minutes(previous.end);
+          if (
+            prevStart !== null &&
+            prevEnd !== null &&
+            prevEnd < prevStart &&
+            prevEnd > 0
+          ) {
+            details.push({
+              start: 0,
+              end: prevEnd,
+              label: `${labels[type]} (continúa desde ayer)`,
+            });
+          }
+        }
+        for (const habit of state.habits) {
+          const days =
+            habit.days || (Number.isInteger(habit.day) ? [habit.day] : []);
+          if (!days.includes(day) || !habit.start || !habit.end) continue;
+          const start = minutes(habit.start),
+            end = minutes(habit.end);
+          if (start !== null && end !== null && end > start) {
+            details.push({ start, end, label: `Hábito: ${habit.name}` });
+          }
+        }
+        return details.sort((a, b) => a.start - b.start);
+      }
+      // Une intervalos: los traslapes se cuentan una vez y quedan señalados.
+      function availability(day) {
+        const slots = intervalDetailsForDay(day);
+        let used = 0,
+          end = -1,
+          overlap = false;
+        for (const slot of slots) {
+          if (slot.start < end) overlap = true;
+          used += Math.max(0, slot.end - Math.max(slot.start, end));
+          end = Math.max(end, slot.end);
+        }
+        return { free: 1440 - used, overlap };
+      }
+      function setScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((x) => x.classList.toggle("active", x.id === id));
+        document.getElementById("nav").classList.toggle("show", id !== "setup");
+        document
+          .querySelectorAll("[data-screen]")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.screen === id),
+          );
+        if (id === "home") renderHome();
+        if (id === "myHabits") renderMyHabits();
+        if (id === "motivation") renderMotivation();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function setTodayPhrase() {
+        const d = new Date(),
+          start = new Date(d.getFullYear(), 0, 0);
+        const day = Math.floor((d - start) / 86400000);
+        document.getElementById("dailyPhrase").textContent =
+          phrases[day % phrases.length];
+      }
+      function readingIndexFor(date = new Date()) {
+        // Un tema distinto por fecha, en un ciclo de siete lecturas.
+        const yearStart = new Date(date.getFullYear(), 0, 0);
+        const dayOfYear = Math.floor((date - yearStart) / 86400000);
+        return dayOfYear % dailyReadings.length;
+      }
+      function renderMotivation(date = new Date()) {
+        const reading = dailyReadings[readingIndexFor(date)];
+        document.getElementById("motivationDate").textContent =
+          new Intl.DateTimeFormat("es-MX", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+          }).format(date);
+        document.getElementById("motivationTitle").textContent = reading.title;
+        document.getElementById("motivationIntro").textContent = reading.intro;
+        document.getElementById("motivationParagraphs").innerHTML =
+          reading.paragraphs
+            .map(
+              (paragraph, index) =>
+                `<article class="reading-item"><span class="reading-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><p>${esc(paragraph)}</p></article>`,
+            )
+            .join("");
+        document.getElementById("motivationClosing").textContent =
+          reading.closing;
+      }
+      function activeHabitsFor(day) {
+        return state.habits.filter((habit) => {
+          const days =
+            habit.days || (Number.isInteger(habit.day) ? [habit.day] : []);
+          return days.length === 0 || days.includes(day);
+        });
+      }
+      function doneToday() {
+        return state.completed[localDateKey()] || [];
+      }
+      function toggleHabit(id) {
+        const key = localDateKey(),
+          done = new Set(state.completed[key] || []);
+        done.has(id) ? done.delete(id) : done.add(id);
+        state.completed[key] = [...done];
+        saveState();
+        renderHome();
+        renderMyHabits();
+      }
+      function renderHome() {
+        if (!state) return;
+        recordActiveDay();
+        setTodayPhrase();
+        document.getElementById("todayLabel").textContent =
+          new Intl.DateTimeFormat("es-MX", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+          })
+            .format(new Date())
+            .toUpperCase();
+        document.getElementById("greetingName").textContent =
+          state.profile.name;
+        document.getElementById("avatar").textContent = (
+          state.profile.name[0] || "M"
+        ).toUpperCase();
+        const n = streak();
+        document.getElementById("streakCount").textContent =
+          `${n} ${n === 1 ? "día" : "días"} con seguimiento`;
+        const habits = activeHabitsFor(localDayIndex()),
+          done = doneToday(),
+          count = habits.filter((h) => done.includes(h.id)).length;
+        document.getElementById("progressValue").textContent =
+          `${count} de ${habits.length}`;
+        document.getElementById("progressFill").style.width =
+          (habits.length ? Math.round((count / habits.length) * 100) : 0) + "%";
+        document.getElementById("progressCaption").textContent = habits.length
+          ? count === habits.length
+            ? "¡Completaste lo que planeaste para hoy!"
+            : "Cada avance cuenta. Ve a tu ritmo."
+          : "No tienes hábitos planeados para hoy; puedes agregarlos cuando quieras.";
+        const list = document.getElementById("todayList");
+        if (!habits.length) {
+          list.innerHTML =
+            '<div class="empty">No hay hábitos para hoy. Puedes revisar o agregar uno en <b>Tus hábitos</b>.</div>';
+        } else {
+          list.innerHTML = habits
+            .map(
+              (h) =>
+                `<div class="mini-habit"><button class="check ${done.includes(h.id) ? "done" : ""}" data-toggle="${h.id}" aria-label="Marcar ${esc(h.name)}">${done.includes(h.id) ? "✓" : ""}</button><span class="name">${esc(h.name)}</span><span class="mins">${h.start && h.end ? fmtHours(minutes(h.end) - minutes(h.start)) : "Sin horario"}</span></div>`,
+            )
+            .join("");
+          list
+            .querySelectorAll("[data-toggle]")
+            .forEach((b) => (b.onclick = () => toggleHabit(b.dataset.toggle)));
+        }
+        document.getElementById("todayRemaining").textContent = fmtHours(
+          availability(localDayIndex()).free,
+        );
+      }
+      function renderDays() {
+        const root = document.getElementById("dayStrip");
+        root.innerHTML = shortDays
+          .map(
+            (d, i) =>
+              `<button class="day ${i === activeDay ? "selected" : ""}" data-day="${i}"><b>${d}</b>${fmtHours(availability(i).free)}</button>`,
+          )
+          .join("");
+        root.querySelectorAll("[data-day]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              activeDay = Number(b.dataset.day);
+              renderMyHabits();
+            }),
+        );
+      }
+      function renderSchedule() {
+        document.getElementById("scheduleDay").textContent =
+          dayNames[activeDay];
+        for (const input of document.querySelectorAll("[data-block]"))
+          input.value =
+            state.schedule[activeDay][input.dataset.block][
+              input.dataset.edge
+            ] || "";
+        updateScheduleStatus();
+      }
+      function updateScheduleStatus() {
+        const result = availability(activeDay),
+          badge = document.getElementById("remainingBadge"),
+          error = document.getElementById("scheduleError");
+        badge.textContent = `${fmtHours(result.free)} disponibles`;
+        badge.classList.toggle("conflict", result.overlap);
+        error.textContent = result.overlap
+          ? "Hay horarios que se traslapan. Revisa tus compromisos y hábitos."
+          : "";
+        renderDays();
+      }
+      function renderMyHabits() {
+        if (!state) return;
+        const ex = document.getElementById("exerciseSummary");
+        if (state.profile.exercise) {
+          const e = state.profile.exercise;
+          ex.innerHTML = `<div class="activity-summary"><div class="eyebrow">Lo que ya haces</div><strong>${esc(e.type)}</strong><div class="progress-foot">${e.minutes} min por sesión · ${e.days} ${e.days === 1 ? "día" : "días"} por semana</div></div>`;
+        } else ex.innerHTML = "";
+        renderDays();
+        renderSchedule();
+        renderHabitList();
+      }
+      function renderHabitList() {
+        const root = document.getElementById("habitList");
+        if (!state.habits.length) {
+          root.innerHTML =
+            '<div class="empty">Todavía no agregas hábitos. Pulsa “Agregar hábitos” para crear el primero y elegir cuándo hacerlo.</div>';
+          return;
+        }
+        const done = doneToday();
+        root.innerHTML = state.habits
+          .map((habit, i) => {
+            const days =
+              habit.days || (Number.isInteger(habit.day) ? [habit.day] : []);
+            const dayLabel = days.length
+              ? days.map((day) => shortDays[day]).join(", ")
+              : "Sin día";
+            const time =
+              habit.start && habit.end
+                ? `${fmtTime(habit.start)}–${fmtTime(habit.end)}`
+                : "Horario sin definir";
+            const reminder = habit.reminder
+              ? ` · Aviso ${habit.reminderLead} min antes`
+              : "";
+            const complete = done.includes(habit.id);
+            return `<article class="habit-card"><div class="habit-mark">${["✿", "◌", "☼", "♡"][i % 4]}</div><div class="habit-info"><strong>${esc(habit.name)}</strong><small>${dayLabel} · ${time}${reminder}</small></div><div><div class="habit-time">${habit.start && habit.end ? fmtHours(minutes(habit.end) - minutes(habit.start)) : ""}</div><button class="check ${complete ? "done" : ""}" data-toggle="${habit.id}" aria-label="Marcar ${esc(habit.name)}">${complete ? "✓" : ""}</button></div><button class="delete-btn" data-delete="${habit.id}" aria-label="Eliminar ${esc(habit.name)}">×</button></article>`;
+          })
+          .join("");
+        root.querySelectorAll("[data-toggle]").forEach((button) => {
+          button.onclick = () => toggleHabit(button.dataset.toggle);
+        });
+        root.querySelectorAll("[data-delete]").forEach((button) => {
+          button.onclick = () => removeHabit(button.dataset.delete);
+        });
+      }
+      function removeHabit(id) {
+        if (!confirm("¿Eliminar este hábito y su horario?")) return;
+        state.habits = state.habits.filter((h) => h.id !== id);
+        saveState();
+        renderMyHabits();
+        renderHome();
+      }
+      // Guarda cada compromiso como hora inicial/final y avisa si hay intervalos encima.
+      for (const input of document.querySelectorAll("[data-block]"))
+        input.addEventListener("change", () => {
+          state.schedule[activeDay][input.dataset.block][input.dataset.edge] =
+            input.value;
+          saveState();
+          updateScheduleStatus();
+          renderHome();
+        });
+      // Opciones de actividad física aparecen solo si la persona responde que sí.
+      document.querySelectorAll("[data-exercise]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            exerciseAnswer = b.dataset.exercise;
+            document
+              .querySelectorAll("[data-exercise]")
+              .forEach((x) => x.classList.toggle("selected", x === b));
+            document.getElementById("exerciseFields").hidden =
+              exerciseAnswer !== "yes";
+          }),
+      );
+      document.getElementById("profileForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const age = Number(document.getElementById("age").value),
+          error = document.getElementById("formError");
+        if (age < 13 || age > 120) {
+          error.textContent =
+            "Esta versión está diseñada para personas de 13 años en adelante.";
+          return;
+        }
+        let exercise = null;
+        if (exerciseAnswer === "yes") {
+          const type = document.getElementById("exerciseType").value.trim(),
+            mins = Number(document.getElementById("exerciseMinutes").value);
+          if (!type || mins < 1) {
+            error.textContent =
+              "Escribe el tipo de actividad y los minutos por sesión.";
+            return;
+          }
+          exercise = {
+            type,
+            minutes: mins,
+            days: Number(document.getElementById("exerciseDays").value),
+          };
+        }
+        state = {
+          profile: {
+            name: document.getElementById("nickname").value.trim(),
+            age,
+            exercise,
+          },
+          habits: [],
+          schedule: defaultSchedule(),
+          activeDates: [],
+          completed: {},
+        };
+        saveState();
+        recordActiveDay();
+        setScreen("home");
+      });
+      function timeLabel(minute) {
+        if (minute >= 1440) return "00:00 del día siguiente";
+        const value = `${String(Math.floor(minute / 60)).padStart(2, "0")}:${String(minute % 60).padStart(2, "0")}`;
+        return fmtTime(value);
+      }
+      // Busca y nombra cada conflicto para que la persona decida con información clara.
+      function findConflicts(days, start, end) {
+        const conflicts = [];
+        for (const day of days) {
+          for (const slot of intervalDetailsForDay(day)) {
+            if (start < slot.end && end > slot.start) {
+              conflicts.push(
+                `${dayNames[day]} — ${slot.label} (${timeLabel(slot.start)}–${timeLabel(slot.end)})`,
+              );
+            }
+          }
+        }
+        return [...new Set(conflicts)];
+      }
+      function clearHabitForm() {
+        document.getElementById("habitForm").reset();
+        document.getElementById("habitStart").value = "15:00";
+        document.getElementById("habitEnd").value = "16:00";
+        selectedHabitDays.clear();
+        document.querySelectorAll("[data-habit-day]").forEach((button) => {
+          button.classList.remove("selected");
+          button.setAttribute("aria-pressed", "false");
+        });
+        document.getElementById("habitError").textContent = "";
+      }
+      // Programa avisos del navegador para la próxima semana; solo funciona con la página activa.
+      function scheduleReminders() {
+        if (window.HabitosAndroid && state) {
+          window.HabitosAndroid.syncReminders(
+            JSON.stringify({
+              habits: state.habits || [],
+              completed: state.completed || {},
+            }),
+          );
+          return;
+        }
+        reminderTimers.forEach(clearTimeout);
+        reminderTimers.length = 0;
+        if (
+          !("Notification" in window) ||
+          Notification.permission !== "granted"
+        )
+          return;
+        const now = new Date();
+        for (const habit of state.habits) {
+          if (!habit.reminder || !habit.start) continue;
+          for (const day of habit.days || []) {
+            if (day === localDayIndex(now) && doneToday().includes(habit.id))
+              continue;
+            const startMinute = minutes(habit.start);
+            const next = new Date(now);
+            next.setDate(now.getDate() + ((day - localDayIndex(now) + 7) % 7));
+            next.setHours(Math.floor(startMinute / 60), startMinute % 60, 0, 0);
+            next.setMinutes(
+              next.getMinutes() - Number(habit.reminderLead || 10),
+            );
+            if (next <= now) next.setDate(next.getDate() + 7);
+            const waitMs = next.getTime() - now.getTime();
+            if (waitMs < 2140000000) {
+              const timer = setTimeout(() => {
+                try {
+                  new Notification(
+                    `En ${habit.reminderLead} minutos: ${habit.name}`,
+                    {
+                      body: `Tu horario empieza a las ${fmtTime(habit.start)}.`,
+                    },
+                  );
+                } catch (_) {
+                  /* El navegador puede bloquear avisos si la página está inactiva. */
+                }
+                scheduleReminders();
+              }, waitMs);
+              reminderTimers.push(timer);
+            }
+          }
+        }
+      }
+      async function savePendingHabit() {
+        if (!pendingHabit) return;
+        const habit = pendingHabit;
+        state.habits.push(habit);
+        saveState();
+        pendingHabit = null;
+        document.getElementById("conflictDialog").hidden = true;
+        clearHabitForm();
+        let message = "Hábito guardado.";
+        if (habit.reminder) {
+          if (window.HabitosAndroid && window.HabitosAndroid.requestReminderPermissions) {
+            window.HabitosAndroid.requestReminderPermissions();
+            message = `Aviso de Android programado: ${habit.reminderLead} min antes. Activa las notificaciones para recibir tus avisos.`;
+          } else if (!("Notification" in window)) {
+            message =
+              "Hábito guardado. No se pudieron activar las notificaciones.";
+          } else {
+            let permission = Notification.permission;
+            try {
+              if (permission === "default")
+                permission = await Notification.requestPermission();
+            } catch (_) {
+              permission = "denied";
+            }
+            if (permission === "granted") {
+              scheduleReminders();
+              message = `Recordatorio activado: ${habit.reminderLead} min antes.`;
+            } else {
+              message =
+                "Hábito guardado, pero no se autorizó el permiso de notificaciones.";
+            }
+          }
+        }
+        setScreen("myHabits");
+        document.getElementById("notificationStatus").textContent = message;
+      }
+      // Los botones de días mantienen una selección múltiple y visible.
+      document.querySelectorAll("[data-habit-day]").forEach((button) => {
+        button.setAttribute("aria-pressed", "false");
+        button.onclick = () => {
+          const day = Number(button.dataset.habitDay);
+          if (selectedHabitDays.has(day)) selectedHabitDays.delete(day);
+          else selectedHabitDays.add(day);
+          button.classList.toggle("selected", selectedHabitDays.has(day));
+          button.setAttribute(
+            "aria-pressed",
+            String(selectedHabitDays.has(day)),
+          );
+        };
+      });
+      document.getElementById("changeHabitTime").onclick = () => {
+        document.getElementById("conflictDialog").hidden = true;
+        pendingHabit = null;
+      };
+      document.getElementById("confirmHabitAnyway").onclick = savePendingHabit;
+      // Valida el intervalo, revisa todos los días elegidos y abre confirmación si hay choques.
+      document.getElementById("habitForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("habitName").value.trim();
+        const days = [...selectedHabitDays].sort((a, b) => a - b);
+        const start = document.getElementById("habitStart").value;
+        const end = document.getElementById("habitEnd").value;
+        const error = document.getElementById("habitError");
+        const startMinute = minutes(start),
+          endMinute = minutes(end);
+        if (!days.length) {
+          error.textContent =
+            "Selecciona uno o varios días para repetir este hábito.";
+          return;
+        }
+        if (
+          startMinute === null ||
+          endMinute === null ||
+          endMinute <= startMinute
+        ) {
+          error.textContent =
+            "La hora final debe ser posterior a la inicial y quedar dentro del mismo día.";
+          return;
+        }
+        pendingHabit = {
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+          name,
+          days,
+          start,
+          end,
+          reminder: document.getElementById("habitReminder").checked,
+          reminderLead: Number(document.getElementById("reminderLead").value),
+        };
+        const conflicts = findConflicts(days, startMinute, endMinute);
+        if (conflicts.length) {
+          document.getElementById("conflictList").innerHTML = conflicts
+            .map((item) => `<li>${esc(item)}</li>`)
+            .join("");
+          document.getElementById("conflictDialog").hidden = false;
+          document.getElementById("changeHabitTime").focus();
+          return;
+        }
+        savePendingHabit();
+      });
+      // Navegación entre las tres pantallas principales.
+      document
+        .querySelectorAll("[data-screen]")
+        .forEach((b) => (b.onclick = () => setScreen(b.dataset.screen)));
+      document
+        .querySelectorAll("[data-go]")
+        .forEach((b) => (b.onclick = () => setScreen(b.dataset.go)));
+      document.getElementById("resetBtn").onclick = () => {
+        if (
+          confirm(
+            "¿Borrar el perfil, horario y hábitos guardados en este dispositivo?",
+          )
+        ) {
+          localStorage.removeItem(STORAGE_KEY);
+          OLD_KEYS.forEach((key) => localStorage.removeItem(key));
+          state = null;
+          if (window.HabitosAndroid) window.HabitosAndroid.syncReminders("[]");
+          reminderTimers.forEach(clearTimeout);
+          reminderTimers.length = 0;
+          setScreen("setup");
+        }
+      };
+      // Recupera el perfil guardado; si es una instalación nueva, muestra el cuestionario.
+      if (state && state.profile) {
+        activeDay = localDayIndex();
+        recordActiveDay();
+        setScreen("home");
+        scheduleReminders();
+      } else {
+        setScreen("setup");
+      }
+    </script>
+  </body>
+</html>
