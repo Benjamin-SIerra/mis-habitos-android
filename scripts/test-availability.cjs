@@ -7,6 +7,10 @@ const html = fs.readFileSync(
   path.join(__dirname, "../app/src/main/assets/HabitosApp.html"),
   "utf8",
 );
+const androidSource = fs.readFileSync(
+  path.join(__dirname, "../app/src/main/java/com/ritual/app/MainActivity.kt"),
+  "utf8",
+);
 
 test("empty schedule exposes the full day as one explicit free range", () => {
   const result = calculateAvailability([]);
@@ -57,9 +61,12 @@ test("home and weekly schedule show explicit free-range containers", () => {
   assert.match(html, /function renderFreeRanges\(/);
 });
 
-test("the schedule has no commute fields or commute calculations", () => {
-  assert.match(html, /const blockNames = \["work", "sleep", "other"\]/);
-  assert.doesNotMatch(html, /commute|trayecto|traslado|tráfico/i);
+test("weekly schedule keeps manual transfer start/end fields and excludes only an automatic work-commute field", () => {
+  assert.match(html, /const blockNames = \["work", "sleep", "other", "transfers"\]/);
+  assert.match(html, /Traslados<input type="time" data-block="transfers" data-edge="start"/);
+  assert.match(html, /Hasta<input type="time" data-block="transfers" data-edge="end"/);
+  assert.match(html, /transfers: "Traslados"/);
+  assert.doesNotMatch(html, /Tiempo de trayecto al trabajo|commute|travelTime/i);
 });
 
 test("daily philosopher quotes include attribution and are rendered on both screens", () => {
@@ -69,4 +76,11 @@ test("daily philosopher quotes include attribution and are rendered on both scre
   assert.match(html, /id="homeQuote"/);
   assert.match(html, /id="motivationQuote"/);
   assert.match(html, /function renderDailyQuote\(/);
+});
+
+test("motivational notifications are opt-in, configurable, and scheduled outside the app on Android", () => {
+  assert.match(html, /id="motivationEnabled" type="checkbox"/);
+  assert.equal((html.match(/data-motivation-time=/g) || []).length, 3);
+  assert.match(androidSource, /ACTION_MOTIVATION/);
+  assert.match(androidSource, /scheduleMotivational\(/);
 });

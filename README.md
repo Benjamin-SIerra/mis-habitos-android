@@ -6,9 +6,9 @@ Aplicación Android para organizar rutinas y construir hábitos a tu ritmo. La i
 
 - Perfil inicial con apodo, edad 13+ y actividad física opcional.
 - Inicio con frase diaria, citas atribuidas, racha, avance y hábitos del día.
-- Agenda semanal con sueño, trabajo/estudio y otros compromisos; muestra cada rango libre del día en lugar de presentar solo un total.
+- Agenda semanal con trabajo/estudio, sueño, otros compromisos y **Traslados manuales con Desde/Hasta**; muestra rangos libres explícitos en formato 24 h. No crea campos ni bloques automáticos de trayecto al trabajo.
 - Hábitos en varios días, horario y detección de conflictos, con opción de cambiar o continuar.
-- Avisos programados en Android con opciones de 5, 10, 15 o 30 minutos antes.
+- Avisos programados para hábitos y hasta tres mensajes motivacionales diarios configurables (mañana, mediodía y tarde), con permiso explícito; se ejecutan como notificaciones locales de Android, sin servidor push.
 - Sección de motivación con siete lecturas originales y citas de Epicteto, Marco Aurelio y Séneca, con referencia a sus obras.
 - Datos locales en SQLite dentro del almacenamiento privado de Android, con migración automática del estado previo guardado por WebView; no requiere cuenta ni conexión.
 

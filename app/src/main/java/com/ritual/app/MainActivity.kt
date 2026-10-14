@@ -30,6 +30,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
 import java.time.ZoneId
+import java.util.Calendar
 
 /** Interfaz y funciones de hábitos incluidas en la aplicación. */
 class MainActivity : Activity() {
@@ -191,6 +192,12 @@ private object ReminderScheduler {
     private const val KEY_HABITS = "habits_json"
     private const val KEY_ALARMS = "alarm_uris"
     private const val ACTION_REMINDER = "com.ritual.app.ACTION_REMINDER"
+    private const val ACTION_MOTIVATION = "com.ritual.app.ACTION_MOTIVATION"
+    private val motivationalQuotes = listOf(
+        "“No son las cosas las que inquietan a las personas, sino sus juicios sobre ellas.” — Epicteto, Enquiridión, §5",
+        "“El alma se tiñe con los pensamientos.” — Marco Aurelio, Meditaciones, V.16",
+        "“No es que tengamos poco tiempo, sino que perdemos mucho.” — Séneca, Sobre la brevedad de la vida, 1.3",
+    )
 
     fun sync(context: Context, habitsJson: String) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -255,10 +262,37 @@ private object ReminderScheduler {
             }
         }
 
+        scheduleMotivational(context, payload, nowMillis, alarmUris)
+
         prefs.edit()
             .putString(KEY_HABITS, habitsJson)
             .putStringSet(KEY_ALARMS, alarmUris)
             .apply()
+    }
+
+    private fun scheduleMotivational(context: Context, payload: JSONObject?, nowMillis: Long, alarmUris: MutableSet<String>) {
+        val settings = payload?.optJSONObject("motivation") ?: return
+        if (!settings.optBoolean("enabled", false)) return
+        val times = settings.optJSONArray("times") ?: return
+        for (index in 0 until minOf(times.length(), 3)) {
+            val time = times.optString(index, "")
+            val parts = time.split(":")
+            if (parts.size != 2) continue
+            val hour = parts[0].toIntOrNull()?.takeIf { it in 0..23 } ?: continue
+            val minute = parts[1].toIntOrNull()?.takeIf { it in 0..59 } ?: continue
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, hour); set(Calendar.MINUTE, minute); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+                if (timeInMillis <= nowMillis) add(Calendar.DAY_OF_YEAR, 1)
+            }
+            val uri = "ritual://motivation/$index"
+            val intent = Intent(context, ReminderReceiver::class.java)
+                .setAction(ACTION_MOTIVATION).setData(Uri.parse(uri))
+                .putExtra("motivation_quote", motivationalQuotes[index % motivationalQuotes.size])
+            val pending = PendingIntent.getBroadcast(context, uri.hashCode() and Int.MAX_VALUE, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            setAlarm(context, calendar.timeInMillis, pending)
+            alarmUris += uri
+        }
     }
 
     fun resyncSaved(context: Context) {
@@ -286,7 +320,9 @@ private object ReminderScheduler {
     }
 
     private fun cancel(context: Context, uri: String) {
-        val intent = reminderIntent(context, uri)
+        val intent = if (uri.startsWith("ritual://motivation/")) {
+            Intent(context, ReminderReceiver::class.java).setAction(ACTION_MOTIVATION).setData(Uri.parse(uri))
+        } else reminderIntent(context, uri)
         val pending = PendingIntent.getBroadcast(
             context,
             uri.hashCode() and Int.MAX_VALUE,
@@ -309,6 +345,7 @@ private object ReminderScheduler {
 /** Muestra la notificación y prepara la repetición semanal siguiente del mismo plan local. */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        val isMotivation = intent.action == "com.ritual.app.ACTION_MOTIVATION"
         val name = intent.getStringExtra("habit_name") ?: "tu hábito"
         val start = intent.getStringExtra("start_time") ?: ""
         val lead = intent.getIntExtra("lead_minutes", 10)
@@ -330,10 +367,11 @@ class ReminderReceiver : BroadcastReceiver() {
                 Intent(context, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
-            val body = "En $lead min: $name. Tu horario empieza a las $start."
+            val body = if (isMotivation) intent.getStringExtra("motivation_quote") ?: "Un paso a la vez: hoy puedes comenzar de nuevo."
+                else "En $lead min: $name. Tu horario empieza a las $start."
             val notification = Notification.Builder(context, channelId)
                 .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                .setContentTitle("Mis Hábitos")
+                .setContentTitle(if (isMotivation) "Una idea para acompañarte" else "Mis Hábitos")
                 .setContentText(body)
                 .setStyle(Notification.BigTextStyle().bigText(body))
                 .setColor(Color.rgb(173, 98, 77))
