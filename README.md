@@ -5,11 +5,11 @@ Aplicación Android para organizar rutinas y construir hábitos a tu ritmo. La i
 ## Funciones
 
 - Perfil inicial con apodo, edad 13+ y actividad física opcional.
-- Inicio con frase diaria, racha, avance y hábitos del día.
-- Agenda semanal con sueño, trabajo/estudio, traslados y otros compromisos; calcula el tiempo disponible. El trayecto al trabajo se registra por viaje y reserva tanto la ida como el regreso (por ejemplo, 40 min cada uno).
+- Inicio con frase diaria, citas atribuidas, racha, avance y hábitos del día.
+- Agenda semanal con sueño, trabajo/estudio y otros compromisos; muestra cada rango libre del día en lugar de presentar solo un total.
 - Hábitos en varios días, horario y detección de conflictos, con opción de cambiar o continuar.
 - Avisos programados en Android con opciones de 5, 10, 15 o 30 minutos antes.
-- Sección de motivación con siete lecturas originales.
+- Sección de motivación con siete lecturas originales y citas de Epicteto, Marco Aurelio y Séneca, con referencia a sus obras.
 - Datos locales en SQLite dentro del almacenamiento privado de Android, con migración automática del estado previo guardado por WebView; no requiere cuenta ni conexión.
 
 ## Notificaciones
@@ -27,6 +27,7 @@ Requiere JDK 17, Android SDK 34 y Gradle 8.5.
 ```bash
 gradle testDebugUnitTest --no-daemon
 gradle assembleDebug --no-daemon
+node --test scripts/test-availability.cjs scripts/test-app-render.cjs
 ```
 
 APK de depuración: `app/build/outputs/apk/debug/app-debug.apk`. Esta compilación no se ha probado en un teléfono físico y no es una versión de publicación para Google Play.

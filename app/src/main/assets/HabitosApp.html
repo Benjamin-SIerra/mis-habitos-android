@@ -393,6 +393,52 @@
       .day.selected b {
         color: #fff;
       }
+      .free-ranges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 10px;
+      }
+      .free-range {
+        border: 1px solid #dce4d8;
+        border-radius: 10px;
+        background: #f2f6ef;
+        color: #3e5745;
+        padding: 7px 9px;
+        font-size: 12px;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+      .free-ranges.empty {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .quote-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px 18px;
+        margin: 15px 0;
+      }
+      .quote-card blockquote {
+        margin: 8px 0;
+        font-family: Georgia, serif;
+        font-size: 18px;
+        line-height: 1.45;
+        color: var(--ink);
+      }
+      .quote-source {
+        color: var(--terra-dark);
+        font-size: 11px;
+        font-style: normal;
+        font-weight: 700;
+      }
+      .quote-reflection {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+        margin: 9px 0 0;
+      }
       .schedule,
       .habit-card {
         background: #fff;
@@ -790,6 +836,12 @@
               </div>
             </div>
           </div>
+          <div class="quote-card">
+            <div class="eyebrow">Una frase para acompañarte</div>
+            <blockquote id="homeQuote"></blockquote>
+            <cite id="homeQuoteSource" class="quote-source"></cite>
+            <p id="homeQuoteReflection" class="quote-reflection"></p>
+          </div>
           <div class="section-head">
             <h3>Tu progreso de hoy</h3>
             <button class="text-btn" data-go="myHabits">Ver tus hábitos</button>
@@ -818,6 +870,7 @@
               <strong>Tiempo disponible hoy</strong
               ><span id="todayRemaining">24 h</span>
             </div>
+            <div id="todayFreeRanges" class="free-ranges" aria-live="polite"></div>
             <div class="progress-foot">
               Es una estimación basada en los horarios que registraste.
             </div>
@@ -860,11 +913,7 @@
               Anota inicio y fin. Puedes registrar sueño cruzando medianoche,
               por ejemplo de 22:00 a 06:00.
             </p>
-            <div class="field">
-              <label for="commuteMinutes">Tiempo de trayecto al trabajo (cada viaje)</label>
-              <input id="commuteMinutes" type="number" min="0" max="360" step="5" value="0" inputmode="numeric" />
-              <span id="commuteSummary" class="hint">Ida y regreso: 0 min en total. Se reserva antes y después del trabajo.</span>
-            </div>
+            <div id="dayFreeRanges" class="free-ranges" aria-live="polite"></div>
             <div class="time-grid">
               <label
                 >Trabajo / estudio<input
@@ -881,14 +930,6 @@
                   data-edge="start" /></label
               ><label
                 >Hasta<input type="time" data-block="sleep" data-edge="end"
-              /></label>
-              <label
-                >Traslados<input
-                  type="time"
-                  data-block="travel"
-                  data-edge="start" /></label
-              ><label
-                >Hasta<input type="time" data-block="travel" data-edge="end"
               /></label>
               <label
                 >Otros compromisos<input
@@ -1002,7 +1043,7 @@
           </p>
         </div>
       </section>
-      <!-- Inspiración: una lectura original de diez párrafos que cambia a diario. -->
+      <!-- Inspiración: lectura propia y citas con atribución y obra. -->
       <section id="motivation" class="screen">
         <div class="page">
           <div class="topline">
@@ -1014,6 +1055,12 @@
             Una lectura breve para acompañarte, sin exigirte hacerlo todo de
             golpe.
           </p>
+          <div class="quote-card">
+            <div class="eyebrow">Una idea para llevar contigo</div>
+            <blockquote id="motivationQuote"></blockquote>
+            <cite id="motivationQuoteSource" class="quote-source"></cite>
+            <p id="motivationQuoteReflection" class="quote-reflection"></p>
+          </div>
           <div class="motivation-banner">
             <div class="eyebrow" id="motivationDate">Lectura de hoy</div>
             <h2 id="motivationTitle"></h2>
@@ -1071,6 +1118,7 @@
         </button>
       </nav>
     </main>
+    <script src="availability.js"></script>
     <script>
       // Las nuevas claves conservan datos previos y agregan días múltiples y recordatorios.
       const STORAGE_KEY = "ritual-habitos-v3";
@@ -1085,7 +1133,7 @@
           "Domingo",
         ],
         shortDays = ["L", "M", "X", "J", "V", "S", "D"];
-      const blockNames = ["work", "sleep", "travel", "other"];
+      const blockNames = ["work", "sleep", "other"];
       // Frases breves de Inicio: se mantienen además de la lectura larga.
       const phrases = [
         "Un día a la vez, sin prisa.",
@@ -1102,6 +1150,26 @@
         "Tu progreso no tiene que parecerse al de nadie.",
         "Cuida el proceso; lo demás llega después.",
         "Un hábito crece con tiempo y cariño.",
+      ];
+      const motivationalQuotes = [
+        {
+          text: "No son las cosas las que inquietan a las personas, sino sus juicios sobre ellas.",
+          author: "Epicteto",
+          source: "Enquiridión, §5",
+          reflection: "Si hoy algo cambia, puedes elegir con calma el siguiente paso posible.",
+        },
+        {
+          text: "El alma se tiñe con los pensamientos.",
+          author: "Marco Aurelio",
+          source: "Meditaciones, V.16 · traducción al español",
+          reflection: "Una práctica pequeña y amable también puede alimentar la persona que quieres ser.",
+        },
+        {
+          text: "No es que tengamos poco tiempo, sino que perdemos mucho.",
+          author: "Séneca",
+          source: "Sobre la brevedad de la vida, 1.3 · traducción al español",
+          reflection: "No hace falta llenar cada hora: basta con reservar un espacio realista para lo que te importa.",
+        },
       ];
       const dailyReadings = [
         {
@@ -1170,7 +1238,7 @@
             "Piensa en una dirección que te importe: aprender algo, sentir más energía, cuidar una relación o tener más orden.",
             "Luego pregúntate qué podría acercarte un poco a esa dirección durante este mes. Busca una acción que dependa en parte de ti.",
             "Hazla concreta para mañana: qué harás, cuánto tiempo y en qué momento aproximado. Un plan amable deja margen para imprevistos.",
-            "Tu horario también merece tener en cuenta el sueño, la escuela, el trabajo, los traslados y el descanso.",
+            "Tu horario también merece tener en cuenta el sueño, la escuela, el trabajo y el descanso.",
             "Si no cabe en tu semana, no significa que no te importe. Quizá necesitas un paso menor o un horario diferente.",
             "Puedes revisar tu plan al final del día: ¿qué ocurrió?, ¿qué aprendiste?, ¿qué sería útil ajustar mañana?",
             "No midas tu valor por una lista completada. La lista es una herramienta para organizarte, no una medida de quién eres.",
@@ -1242,8 +1310,6 @@
         return {
           work: { start: "", end: "" },
           sleep: { start: "", end: "" },
-          travel: { start: "", end: "" },
-          commuteMinutes: 0,
           other: { start: "", end: "" },
         };
       }
@@ -1277,7 +1343,8 @@
             reminder: habit.reminder ?? false,
             reminderLead: habit.reminderLead ?? 10,
           }));
-          saved.schedule = saved.schedule.map((day) => ({ ...emptyDay(), ...day, commuteMinutes: Number(day.commuteMinutes || 0) }));
+          // Conserva perfiles anteriores; solo los compromisos activos afectan el cálculo.
+          saved.schedule = saved.schedule.map((day) => ({ ...emptyDay(), ...day }));
           saved.activeDates ||= [];
           saved.completed ||= {};
           const migrated = JSON.stringify(saved);
@@ -1378,7 +1445,6 @@
         const labels = {
           work: "Trabajo / estudio",
           sleep: "Sueño",
-          travel: "Traslados",
           other: "Otros compromisos",
         };
         for (const type of blockNames) {
@@ -1408,23 +1474,6 @@
             });
           }
         }
-        const daySchedule = state.schedule[day];
-        const workStart = minutes(daySchedule.work.start),
-          workEnd = minutes(daySchedule.work.end),
-          commuteMinutes = Math.max(0, Number(daySchedule.commuteMinutes || 0));
-        if (workStart !== null && workEnd !== null && workStart !== workEnd && commuteMinutes > 0) {
-          details.push({ start: Math.max(0, workStart - commuteMinutes), end: workStart, label: "Trayecto de ida" });
-          if (workEnd > workStart) {
-            details.push({ start: workEnd, end: Math.min(1440, workEnd + commuteMinutes), label: "Trayecto de regreso a casa" });
-          }
-        }
-        const previousSchedule = state.schedule[(day + 6) % 7];
-        const previousStart = minutes(previousSchedule.work.start),
-          previousEnd = minutes(previousSchedule.work.end),
-          previousCommute = Math.max(0, Number(previousSchedule.commuteMinutes || 0));
-        if (previousStart !== null && previousEnd !== null && previousEnd < previousStart && previousCommute > 0) {
-          details.push({ start: previousEnd, end: Math.min(1440, previousEnd + previousCommute), label: "Trayecto de regreso a casa" });
-        }
         for (const habit of state.habits) {
           const days =
             habit.days || (Number.isInteger(habit.day) ? [habit.day] : []);
@@ -1440,15 +1489,30 @@
       // Une intervalos: los traslapes se cuentan una vez y quedan señalados.
       function availability(day) {
         const slots = intervalDetailsForDay(day);
-        let used = 0,
-          end = -1,
-          overlap = false;
-        for (const slot of slots) {
-          if (slot.start < end) overlap = true;
-          used += Math.max(0, slot.end - Math.max(slot.start, end));
-          end = Math.max(end, slot.end);
+        const result = window.HabitosAvailability.calculateAvailability(
+          slots.map((slot) => [slot.start, slot.end]),
+        );
+        return {
+          free: result.freeMinutes,
+          freeRanges: result.freeRanges,
+          overlap: result.overlap,
+        };
+      }
+      function rangeLabel([start, end]) {
+        if (start === 0 && end === 1440) return `${timeLabel(0)}–medianoche (todo el día)`;
+        return `${timeLabel(start)}–${end === 1440 ? "medianoche" : timeLabel(end)}`;
+      }
+      function renderFreeRanges(elementId, ranges) {
+        const root = document.getElementById(elementId);
+        if (!ranges.length) {
+          root.classList.add("empty");
+          root.textContent = "No hay espacios libres según los horarios registrados.";
+          return;
         }
-        return { free: 1440 - used, overlap };
+        root.classList.remove("empty");
+        root.innerHTML = ranges
+          .map((range) => `<span class="free-range">${esc(rangeLabel(range))}</span>`)
+          .join("");
       }
       function setScreen(id) {
         document
@@ -1479,6 +1543,7 @@
         return dayOfYear % dailyReadings.length;
       }
       function renderMotivation(date = new Date()) {
+        renderDailyQuote(date);
         const reading = dailyReadings[readingIndexFor(date)];
         document.getElementById("motivationDate").textContent =
           new Intl.DateTimeFormat("es-MX", {
@@ -1497,6 +1562,23 @@
             .join("");
         document.getElementById("motivationClosing").textContent =
           reading.closing;
+      }
+      function quoteIndexFor(date = new Date()) {
+        const yearStart = new Date(date.getFullYear(), 0, 0);
+        const dayOfYear = Math.floor((date - yearStart) / 86400000);
+        return dayOfYear % motivationalQuotes.length;
+      }
+      function renderDailyQuote(date = new Date()) {
+        const quote = motivationalQuotes[quoteIndexFor(date)];
+        const destinations = [
+          ["homeQuote", "homeQuoteSource", "homeQuoteReflection"],
+          ["motivationQuote", "motivationQuoteSource", "motivationQuoteReflection"],
+        ];
+        for (const [textId, sourceId, reflectionId] of destinations) {
+          document.getElementById(textId).textContent = `“${quote.text}”`;
+          document.getElementById(sourceId).textContent = `— ${quote.author} · ${quote.source}`;
+          document.getElementById(reflectionId).textContent = quote.reflection;
+        }
       }
       function activeHabitsFor(day) {
         return state.habits.filter((habit) => {
@@ -1549,6 +1631,7 @@
             ? "¡Completaste lo que planeaste para hoy!"
             : "Cada avance cuenta. Ve a tu ritmo."
           : "No tienes hábitos planeados para hoy; puedes agregarlos cuando quieras.";
+        renderDailyQuote();
         const list = document.getElementById("todayList");
         if (!habits.length) {
           list.innerHTML =
@@ -1564,16 +1647,16 @@
             .querySelectorAll("[data-toggle]")
             .forEach((b) => (b.onclick = () => toggleHabit(b.dataset.toggle)));
         }
-        document.getElementById("todayRemaining").textContent = fmtHours(
-          availability(localDayIndex()).free,
-        );
+        const todayAvailability = availability(localDayIndex());
+        document.getElementById("todayRemaining").textContent = `${fmtHours(todayAvailability.free)} disponibles`;
+        renderFreeRanges("todayFreeRanges", todayAvailability.freeRanges);
       }
       function renderDays() {
         const root = document.getElementById("dayStrip");
         root.innerHTML = shortDays
           .map(
             (d, i) =>
-              `<button class="day ${i === activeDay ? "selected" : ""}" data-day="${i}"><b>${d}</b>${fmtHours(availability(i).free)}</button>`,
+              `<button class="day ${i === activeDay ? "selected" : ""}" data-day="${i}" aria-label="${dayNames[i]}"><b>${d}</b></button>`,
           )
           .join("");
         root.querySelectorAll("[data-day]").forEach(
@@ -1592,19 +1675,14 @@
             state.schedule[activeDay][input.dataset.block][
               input.dataset.edge
             ] || "";
-        document.getElementById("commuteMinutes").value = state.schedule[activeDay].commuteMinutes || 0;
-        updateCommuteSummary();
         updateScheduleStatus();
-      }
-      function updateCommuteSummary() {
-        const commuteMinutes = Math.max(0, Number(state.schedule[activeDay].commuteMinutes || 0));
-        document.getElementById("commuteSummary").textContent = `Ida y regreso: ${2 * commuteMinutes} min en total (${commuteMinutes} min por viaje). Se reserva antes y después del trabajo.`;
       }
       function updateScheduleStatus() {
         const result = availability(activeDay),
           badge = document.getElementById("remainingBadge"),
           error = document.getElementById("scheduleError");
         badge.textContent = `${fmtHours(result.free)} disponibles`;
+        renderFreeRanges("dayFreeRanges", result.freeRanges);
         badge.classList.toggle("conflict", result.overlap);
         error.textContent = result.overlap
           ? "Hay horarios que se traslapan. Revisa tus compromisos y hábitos."
@@ -1689,13 +1767,7 @@
           updateScheduleStatus();
           renderHome();
         });
-      document.getElementById("commuteMinutes").addEventListener("change", (event) => {
-        const value = Number(event.target.value);
-        if (!Number.isFinite(value) || value < 0 || value > 360) { event.target.value = state.schedule[activeDay].commuteMinutes || 0; return; }
-        state.schedule[activeDay].commuteMinutes = Math.round(value);
-        event.target.value = state.schedule[activeDay].commuteMinutes;
-        saveState(); updateCommuteSummary(); updateScheduleStatus(); renderHome();
-      });
+
       // Opciones de actividad física aparecen solo si la persona responde que sí.
       document.querySelectorAll("[data-exercise]").forEach(
         (b) =>
