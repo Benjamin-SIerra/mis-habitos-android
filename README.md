@@ -22,12 +22,13 @@ Los datos de perfil, agenda y hábitos permanecen en el dispositivo. Se conserva
 
 ## Compilar
 
-Requiere JDK 17, Android SDK 34 y Gradle 8.5.
+Requiere JDK 17, Android SDK 34 y el Gradle Wrapper incluido (Gradle 8.5).
 
 ```bash
-gradle testDebugUnitTest --no-daemon
-gradle assembleDebug --no-daemon
+./gradlew testDebugUnitTest --no-daemon
+./gradlew assembleDebug --no-daemon
 node --test scripts/test-availability.cjs scripts/test-app-render.cjs
+python -m unittest discover -s tests -v
 ```
 
 APK de depuración: `app/build/outputs/apk/debug/app-debug.apk`. Esta compilación no se ha probado en un teléfono físico y no es una versión de publicación para Google Play.

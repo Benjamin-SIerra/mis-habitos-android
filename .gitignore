@@ -7,3 +7,15 @@ local.properties
 *.aab
 *.jks
 *.keystore
+*.p12
+*.pem
+*.log
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+secrets.properties
+keys.properties
+google-services.json
+service-account*.json

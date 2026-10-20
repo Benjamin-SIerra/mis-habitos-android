@@ -20,12 +20,13 @@ class LocalPersistenceAndCommuteTests(unittest.TestCase):
         self.assertIn("saveState?.(migrated)", source)
         self.assertIn("localStorage.getItem(STORAGE_KEY)", source)
 
-    def test_commute_duration_counts_both_outbound_and_return_trips(self):
+    def test_commute_duration_is_manual_and_not_calculated_automatically(self):
         source = HTML.read_text(encoding="utf-8")
-        self.assertIn("commuteMinutes", source)
-        self.assertIn("Ida y regreso", source)
-        self.assertIn("2 * commuteMinutes", source)
+        self.assertIn('data-block="transfers"', source)
+        self.assertIn("Traslados", source)
         self.assertIn("Trabajo / estudio", source)
+        self.assertNotIn("commuteMinutes", source)
+        self.assertNotIn("Ida y regreso", source)
 
     def test_deleting_a_habit_does_not_open_browser_file_confirm(self):
         source = HTML.read_text(encoding="utf-8")

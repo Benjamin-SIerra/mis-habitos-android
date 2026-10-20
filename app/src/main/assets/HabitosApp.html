@@ -1146,6 +1146,25 @@
         "Tu progreso no tiene que parecerse al de nadie.",
         "Cuida el proceso; lo demás llega después.",
         "Un hábito crece con tiempo y cariño.",
+        "El siguiente paso pequeño sigue siendo una decisión valiosa.",
+        "La repetición imperfecta tiene más fuerza que esperar el día ideal.",
+        "Hazlo fácil para tu versión cansada de hoy.",
+        "Tus horarios pueden ajustarse; tu intención sigue contando.",
+        "Empieza donde estás y usa lo que tienes.",
+        "Descansar también protege el hábito que estás construyendo.",
+        "No necesitas recuperar todo hoy; solo volver a conectar.",
+        "Una decisión consciente puede cambiar el tono de tu día.",
+        "Tu agenda es una herramienta, no una prueba de valor.",
+        "Un minuto dedicado con intención puede abrir el camino.",
+        "Haz espacio para lo importante, incluso si el espacio es pequeño.",
+        "La disciplina amable también sabe cuándo simplificar.",
+        "Volver a intentarlo es parte natural de aprender.",
+        "Construyes confianza cada vez que cumples una promesa pequeña.",
+        "No compares tu capítulo de hoy con el resumen de otra persona.",
+        "Lo sostenible vale más que lo espectacular por un solo día.",
+        "Tu progreso puede ser silencioso y aun así ser real.",
+        "Elige una acción que tu yo de mañana agradecerá.",
+        "Hoy tienes permiso de hacerlo más simple.",
       ];
       const motivationalQuotes = [
         {
@@ -1529,12 +1548,13 @@
         if (id === "motivation") renderMotivation();
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
+      // Selección rotativa: evita repetir la frase anterior incluso al volver a consultar Inicio.
       function setTodayPhrase() {
-        const d = new Date(),
-          start = new Date(d.getFullYear(), 0, 0);
-        const day = Math.floor((d - start) / 86400000);
-        document.getElementById("dailyPhrase").textContent =
-          phrases[day % phrases.length];
+        const previous = Number(localStorage.getItem("habitos_last_phrase") || "-1");
+        const pool = phrases.map((_, index) => index).filter((index) => index !== previous);
+        const index = pool[Math.floor(Math.random() * pool.length)] ?? 0;
+        localStorage.setItem("habitos_last_phrase", String(index));
+        document.getElementById("dailyPhrase").textContent = phrases[index];
       }
       function readingIndexFor(date = new Date()) {
         // Un tema distinto por fecha, en un ciclo de siete lecturas.
@@ -1836,9 +1856,14 @@
         recordActiveDay();
         setScreen("home");
       });
+      // Siempre comunica el periodo del día: 12 h con AM/PM, sin ambigüedad.
       function timeLabel(minute) {
-        if (minute >= 1440) return "00:00 del día siguiente";
-        return `${String(Math.floor(minute / 60)).padStart(2, "0")}:${String(minute % 60).padStart(2, "0")}`;
+        if (minute >= 1440) return "12:00 AM del día siguiente";
+        const hour24 = Math.floor(minute / 60) % 24;
+        const minutePart = String(minute % 60).padStart(2, "0");
+        const suffix = hour24 < 12 ? "AM" : "PM";
+        const hour12 = hour24 % 12 || 12;
+        return `${hour12}:${minutePart} ${suffix}`;
       }
       // Busca y nombra cada conflicto para que la persona decida con información clara.
       function findConflicts(days, start, end) {

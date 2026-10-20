@@ -88,8 +88,8 @@ test("the full app script renders exact free intervals and a sourced quote", () 
 
   assert.equal(nodes.get("todayRemaining").textContent, "8 h disponibles");
   assert.equal(ranges.length, 2);
-  assert.match(ranges[0], /Libre de 06:00 a 09:00/);
-  assert.match(ranges[1], /Libre de 17:00 a 22:00/);
+  assert.match(ranges[0], /Libre de 6:00 AM a 9:00 AM/);
+  assert.match(ranges[1], /Libre de 5:00 PM a 10:00 PM/);
   assert.match(nodes.get("homeQuote").textContent, /“.+”/);
   assert.match(nodes.get("homeQuoteSource").textContent, /Epicteto|Marco Aurelio|Séneca/);
 });

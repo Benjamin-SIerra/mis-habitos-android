@@ -197,6 +197,16 @@ private object ReminderScheduler {
         "“No son las cosas las que inquietan a las personas, sino sus juicios sobre ellas.” — Epicteto, Enquiridión, §5",
         "“El alma se tiñe con los pensamientos.” — Marco Aurelio, Meditaciones, V.16",
         "“No es que tengamos poco tiempo, sino que perdemos mucho.” — Séneca, Sobre la brevedad de la vida, 1.3",
+        "Haz hoy la versión más pequeña que puedas sostener mañana.",
+        "La constancia no exige perfección: exige una forma de volver.",
+        "Una decisión breve también puede proteger lo que te importa.",
+        "Descansar a tiempo es parte de una rutina que puede durar.",
+        "No necesitas resolver la semana completa para dar un paso útil hoy.",
+        "Tu progreso se construye en los momentos ordinarios.",
+        "Ajustar el plan demuestra atención, no fracaso.",
+        "Haz espacio para una cosa importante antes de pedirte más.",
+        "Un hábito amable deja margen para los días difíciles.",
+        "Volver después de una pausa también cuenta como avance.",
     )
 
     fun sync(context: Context, habitsJson: String) {
@@ -287,7 +297,7 @@ private object ReminderScheduler {
             val uri = "ritual://motivation/$index"
             val intent = Intent(context, ReminderReceiver::class.java)
                 .setAction(ACTION_MOTIVATION).setData(Uri.parse(uri))
-                .putExtra("motivation_quote", motivationalQuotes[index % motivationalQuotes.size])
+                .putExtra("motivation_quote", motivationalQuotes[((nowMillis / 86_400_000L).toInt() * 3 + index) % motivationalQuotes.size])
             val pending = PendingIntent.getBroadcast(context, uri.hashCode() and Int.MAX_VALUE, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             setAlarm(context, calendar.timeInMillis, pending)

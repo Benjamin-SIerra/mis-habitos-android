@@ -56,8 +56,8 @@ class BrandingTests(unittest.TestCase):
 
     def test_native_notification_uses_new_brand(self):
         source = MAIN_ACTIVITY.read_text(encoding="utf-8")
-        self.assertIn('.setContentTitle("Mis Hábitos")', source)
-        self.assertIn('"Recordatorios de hábitos"', source)
+        self.assertIn('.setContentTitle(if (isMotivation) "Una idea para acompañarte" else "Mis Hábitos")', source)
+        self.assertIn('NotificationChannel(channelId, "Recordatorios de hábitos"', source)
 
 
 if __name__ == "__main__":
